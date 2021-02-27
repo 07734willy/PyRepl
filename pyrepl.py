@@ -8,18 +8,20 @@ from json import dump
 import sys
 import re
 
+DECOR_LINE  = r"(?:@.*\n)"
 SOURCE_LINE = r"(?:.*\n)"
-INPUT_LINE = r"(?:# in: .*\n)"
-EMPTY_LINE = r"(?:\n|#(?! in: ).*\n)"
+INPUT_LINE  = r"(?:# in: .*\n)"
+EMPTY_LINE  = r"(?:\n|#(?! in: ).*\n)"
 
-SOURCES  = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
-EXT_DATA = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
-EMPTY    = rf"(?:{EMPTY_LINE})"
+PRESOURCES = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{DECOR_LINE})"
+SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
+EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
+EMPTY      = rf"(?:{EMPTY_LINE})"
 
 DEFAULT_TIMEOUT = 1
 
 def get_segments(code):
-	regex = rf"^((({EMPTY}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
+	regex = rf"^((({EMPTY}*{PRESOURCES}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
 	return re.match(regex, code).groups()
 
 def parse_input(data_segment):
@@ -70,7 +72,7 @@ class Interpeter:
 		self.lineno = 0
 		self.lines = {}
 		
-		self.code = sys.stdin.read() + "\n"
+		self.code = sys.stdin.read() + "\n\n"
 		setfds()
 		
 		self.global_ns = {}
@@ -126,6 +128,8 @@ class Interpeter:
 			self.write_exc()
 		except Exception as e:
 			self.write_exc()
+		finally:
+			self.global_ns.update(self.local_ns)
 
 	def write_exc(self):
 			etype, value, tb = sys.exc_info()
@@ -155,7 +159,7 @@ def main():
 	if not thread.is_alive():
 		interpreter.dump()
 	else:
-		write_error("Error: execution timed out")
+		write_error("PyRepl: Timed out")
 
 if __name__ == "__main__":
 	main()

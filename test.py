@@ -10,7 +10,7 @@ if some:
 
 if value:
 	x = 1 # FEAF
-	z = input("foo??")
+	z = input("text: ")
 	x = 2
 	print(z)
 # testing
@@ -34,8 +34,21 @@ _ + 3
 x = 
 print('---', some)
 
+from functools import lru_cache
 
+x = 1
 
+@lru_cache
+@lru_cache
 
+@lru_cache
+def test():
+	global x
+	x += 1
+	return x
+
+print(test())
+print(test())
+print(test())
 
 
