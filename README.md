@@ -1,4 +1,6 @@
-# Vim-PyRepl
+# Vim-PyRepl 
+![example workflow](https://github.com/07734willy/Vim-PyRepl/actions/workflows/python-package.yml/badge.svg)
+
 A vim plugin for executing python code within the buffer, displaying the results. A middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
 ### Installation
