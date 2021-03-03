@@ -3,6 +3,12 @@
 
 A vim plugin for executing python code within the buffer, displaying the results. A middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
+### Requirements
+
+This plugin requires Python 3.7+ to evaluate your python script. It has been tested to work on Python 3.6.9, however tests are not ran automatically against this version, and thus it may break in the future.
+
+Tested on with both Vim and NeoVim, specifically Vim 8.0 and NeoVim 0.4.3. However, its very likely that this plugin will work on older versions, since it doesn't do anything too crazy vim-side.
+
 ### Installation
 
 To install the plugin, you'll likely want to use some plugin manager. Below is an examples using Vim-Plug and Vundle, but you're free to use whichever you prefer.
