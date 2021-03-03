@@ -2,9 +2,10 @@ from traceback import format_exception
 import sys
 import re
 
-SOURCE_LINE = r"(?:.*\n)"
-INPUT_LINE  = r"(?:# in: .*\n)"
-EMPTY_LINE  = r"(?:\n|#(?! in: ).*\n)"
+DOT = r"(?:(?<!\\)(?:\\\\)*\\\n|.)"
+SOURCE_LINE = rf"(?:{DOT}*\n)"
+INPUT_LINE  = rf"(?:# in: {DOT}*\n)"
+EMPTY_LINE  = rf"(?:\n|#(?! in: ){DOT}*\n)"
 
 SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
 EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"

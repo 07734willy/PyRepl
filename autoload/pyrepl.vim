@@ -16,8 +16,8 @@ endif
 fun! s:DelComments(keyword) abort
 	let [l:bufnum, l:lnum, l:col, l:off, l:curswant] = getcurpos()
 
-	sil execute "+1,$g/^# " . a:keyword . ": /d"
 	sil execute "1,g/^# " . a:keyword . ": /d|let l:lnum -= 1"
+	sil execute ",$g/^# " . a:keyword . ": /d"
 
 	call setpos(".", [bufnum, lnum, col, off, curswant])
 endfun
