@@ -27,6 +27,11 @@ def parse_input(data_segment):
 	data = "".join(match.group(1) for match in matches)
 	return data
 
+def strip_newline(text):
+	if text.endswith("\n"):
+		return text[:-1]
+	return text
+
 class Interpreter:
 	def __init__(self, fdin, fdout):
 		self.fdin = fdin
@@ -37,10 +42,16 @@ class Interpreter:
 
 		if output:
 			lineno = self.lineno + offset
-			pyoutput = indent(output, "# out: ", lambda line: True)
+			clean_output = strip_newline(output)
+			pyoutput = indent(clean_output, "# out: ", lambda line: True)
 			self.lines[lineno] = pyoutput
 
-			self.lineno += output.count("\n")
+			self.lineno += clean_output.count("\n") + 1
+
+			if not output.endswith("\n"):
+				lineno = self.lineno + offset
+				self.lines[lineno] = f"# warn: No tailing newline"
+				self.lineno += 1
 
 		clear_fd(self.fdout)
 

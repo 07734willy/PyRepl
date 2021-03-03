@@ -49,7 +49,7 @@ fun! pyrepl#EvalBuffer() abort
 			echohl None
 			return
 		endif
-		call append(lineno, split(text, "\n"))
+		call append(lineno, split(text, "\n", 1))
 	endfor
 endfun
 
