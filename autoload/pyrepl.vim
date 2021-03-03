@@ -14,12 +14,12 @@ if !exists("g:pyrepl_interpreter")
 endif
 
 fun! s:DelComments(keyword) abort
-	let l:source = join(getline(1,'$'), "\n")
+	let [l:bufnum, l:lnum, l:col, l:off, l:curswant] = getcurpos()
 
-	sil execute "%g/^# " . a:keyword . ": /d"
-	if source =~ "\\%(^\\|\\n\\)# ". a:keyword . ": "
-		call setpos(".", getpos("'`"))
-	endif
+	sil execute "+1,$g/^# " . a:keyword . ": /d"
+	sil execute "1,g/^# " . a:keyword . ": /d|let l:lnum -= 1"
+
+	call setpos(".", [bufnum, lnum, col, off, curswant])
 endfun
 
 fun! pyrepl#StripOutput() abort
