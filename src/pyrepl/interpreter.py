@@ -2,68 +2,9 @@ from textwrap import indent
 from traceback import format_exception
 from contextlib import suppress
 import sys
-import re
 
 from .fdio import read_fd, write_fd, append_fd, clear_fd
-
-DECOR_LINE  = r"(?:@.*\n)"
-SOURCE_LINE = r"(?:.*\n)"
-INPUT_LINE  = r"(?:# in: .*\n)"
-EMPTY_LINE  = r"(?:\n|#(?! in: ).*\n)"
-
-PRESOURCES = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{DECOR_LINE})"
-SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
-EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
-EMPTY      = rf"(?:{EMPTY_LINE})"
-
-
-def get_syntax_error(code):
-	try:
-		compile(code, "<string>", "exec")
-	except SyntaxError as e:
-		return "".join(format_exception(type(e), e, e.__traceback__))
-
-def get_subsegments(code):
-	regex = rf"^((({EMPTY}*{PRESOURCES}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
-	return re.match(regex, code).groups()
-
-def get_segments(code):
-	all_segment, data_segment, code_segment = get_subsegments(code)
-
-	error = get_syntax_error(code_segment)
-	new_code = code[len(all_segment):]
-	while error and new_code:
-		all_next, data_next, code_next = get_subsegments(new_code)
-		
-		new_error = get_syntax_error(all_segment + code_next)
-		if new_error == error:
-			#print(new_error, file=sys.__stderr__)
-			#print(error, file=sys.__stderr__)
-			break
-		# import sys
-		# print('>>>>>>>>>', file=sys.__stderr__)
-		# print(code_segment, file=sys.__stderr__)
-		# print('..........', file=sys.__stderr__)
-		# print(new_error, file=sys.__stderr__)
-		# print(error, file=sys.__stderr__)
-		# print('????????', file=sys.__stderr__)
-		# print(all_segment + code_next, file=sys.__stderr__)
-
-		error = new_error
-		code_segment = all_segment + code_next
-		data_segment = all_segment + data_next
-		all_segment  = all_segment + all_next
-		new_code = code[len(all_segment):]
-
-	return all_segment, data_segment, code_segment
-	
-
-def parse_input(data_segment):
-	regex = r"# in: (.*\n)"
-	matches = re.finditer(regex, data_segment)
-	
-	data = "".join(match.group(1) for match in matches)
-	return data
+from .parser import get_segments
 
 def strip_newline(text):
 	if text.endswith("\n"):
@@ -112,19 +53,17 @@ class Interpreter:
 		self.reset()
 		self.code = code + "\n\n"
 
-		while self.code:
-			all_segment, data_segment, code_segment = get_segments(self.code)
-			data_input = parse_input(data_segment)
-			self.code = self.code[len(all_segment):]
-
+		segments = get_segments(code)
+		for segment in segments:
+			data_input = segment.parse_input()
+			
 			clear_fd(self.fdin)
 			write_fd(self.fdin, data_input)
 
-			offset = data_segment.count("\n")
-			self.eval_segment(code_segment, offset)
-			self.process_output(offset)
+			self.eval_segment(segment.code, segment.offset)
+			self.process_output(segment.offset)
 
-			self.lineno += all_segment.count("\n")
+			self.lineno += segment.numlines
 
 	def eval_segment(self, code_segment, offset):
 		code = "\n" * self.lineno + code_segment
