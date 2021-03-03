@@ -51,4 +51,7 @@ print(test())
 print(test())
 print(test())
 
-
+try:
+	print(11)
+except:
+	print(2)

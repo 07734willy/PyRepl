@@ -16,9 +16,47 @@ SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
 EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
 EMPTY      = rf"(?:{EMPTY_LINE})"
 
-def get_segments(code):
+
+def get_syntax_error(code):
+	try:
+		compile(code, "<string>", "exec")
+	except SyntaxError as e:
+		return "".join(format_exception(type(e), e, e.__traceback__))
+
+def get_subsegments(code):
 	regex = rf"^((({EMPTY}*{PRESOURCES}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
 	return re.match(regex, code).groups()
+
+def get_segments(code):
+	all_segment, data_segment, code_segment = get_subsegments(code)
+
+	error = get_syntax_error(code_segment)
+	new_code = code[len(all_segment):]
+	while error and new_code:
+		all_next, data_next, code_next = get_subsegments(new_code)
+		
+		new_error = get_syntax_error(all_segment + code_next)
+		if new_error == error:
+			#print(new_error, file=sys.__stderr__)
+			#print(error, file=sys.__stderr__)
+			break
+		# import sys
+		# print('>>>>>>>>>', file=sys.__stderr__)
+		# print(code_segment, file=sys.__stderr__)
+		# print('..........', file=sys.__stderr__)
+		# print(new_error, file=sys.__stderr__)
+		# print(error, file=sys.__stderr__)
+		# print('????????', file=sys.__stderr__)
+		# print(all_segment + code_next, file=sys.__stderr__)
+
+		error = new_error
+		code_segment = all_segment + code_next
+		data_segment = all_segment + data_next
+		all_segment  = all_segment + all_next
+		new_code = code[len(all_segment):]
+
+	return all_segment, data_segment, code_segment
+	
 
 def parse_input(data_segment):
 	regex = r"# in: (.*\n)"
@@ -110,9 +148,9 @@ class Interpreter:
 			self.global_ns.update(self.local_ns)
 
 	def write_exc(self):
-			etype, value, tb = sys.exc_info()
-			exc = "".join(format_exception(etype, value, tb.tb_next))
-			append_fd(self.fdout, exc)
+		etype, value, tb = sys.exc_info()
+		exc = "".join(format_exception(etype, value, tb.tb_next))
+		append_fd(self.fdout, exc)
 
 	@property
 	def output(self):
