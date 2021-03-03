@@ -1,5 +1,5 @@
 
-let $PYTHONPATH .= ":" . resolve(expand("<sfile>:p:h:h") . '/src/pyrepl')
+let $PYTHONPATH .= ":" . resolve(expand("<sfile>:p:h:h") . '/src')
 
 if !exists("g:pyrepl_timeout")
 	let g:pyrepl_timeout = 1

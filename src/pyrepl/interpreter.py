@@ -1,12 +1,10 @@
 from textwrap import indent
-from traceback import print_exc, format_exc, walk_tb, walk_stack, format_exception
-from threading import Thread
+from traceback import format_exception
 from contextlib import suppress
-from pprint import pformat
-from io import StringIO
-from json import dump
 import sys
 import re
+
+from .fdio import read_fd, write_fd, append_fd, clear_fd
 
 DECOR_LINE  = r"(?:@.*\n)"
 SOURCE_LINE = r"(?:.*\n)"
@@ -17,8 +15,6 @@ PRESOURCES = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{DECOR_LINE})"
 SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
 EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
 EMPTY      = rf"(?:{EMPTY_LINE})"
-
-DEFAULT_TIMEOUT = 1
 
 def get_segments(code):
 	regex = rf"^((({EMPTY}*{PRESOURCES}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
@@ -31,56 +27,14 @@ def parse_input(data_segment):
 	data = "".join(match.group(1) for match in matches)
 	return data
 
-def setfds():
-	sys.stdout = sys.stderr = StringIO()
-	sys.stdin = StdinIO(sys.stdout)
-
-def reset_fd(fd):
-	fd.truncate(0)
-	fd.seek(0)
-
-def write_fd(fd, data):
-	fd.write(data)
-	fd.seek(0)
-
-def debug(*args, **kwargs):
-	#print(*args, **kwargs, file=sys.__stdout__)
-	...
-
-class StdinIO(StringIO):
-	def __init__(self, stdout):
-		self.stdout = stdout
-		super().__init__()
-
-	def read(self, *args, **kwargs):
-		result = super().read(*args, **kwargs)
-		self.stdout.write(result)
-		return result
-	
-	def readline(self, *args, **kwargs):
-		result = super().readline(*args, **kwargs)
-		self.stdout.write(result)
-		return result
-	
-	def readlines(self, *args, **kwargs):
-		result = super().readlines(*args, **kwargs)
-		self.stdout.writelines(result)
-		return result
-
-class Interpeter:
-	def __init__(self):
-		self.lineno = 0
-		self.lines = {}
-		
-		self.code = sys.stdin.read() + "\n\n"
-		setfds()
-		
-		self.global_ns = {}
-		self.local_ns = {}
+class Interpreter:
+	def __init__(self, fdin, fdout):
+		self.fdin = fdin
+		self.fdout = fdout
 
 	def process_output(self, offset):
-		output = sys.stdout.getvalue()
-		
+		output = read_fd(self.fdout)
+
 		if output:
 			lineno = self.lineno + offset
 			pyoutput = indent(output, "# out: ", lambda line: True)
@@ -88,21 +42,34 @@ class Interpeter:
 
 			self.lineno += output.count("\n")
 
-		reset_fd(sys.stdout)
+		clear_fd(self.fdout)
 
 	def prompt_input(self, offset):
 		lineno = self.lineno + offset
 		self.lines[lineno] = "# in: "
 		self.lineno += 1
 
-	def eval(self):
+	def reset(self):
+		self.lineno = 0
+		self.lines = {}
+
+		self.global_ns = {}
+		self.local_ns = {}
+
+		clear_fd(self.fdin)
+		clear_fd(self.fdout)
+
+	def eval(self, code):
+		self.reset()
+		self.code = code + "\n\n"
+
 		while self.code:
 			all_segment, data_segment, code_segment = get_segments(self.code)
 			data_input = parse_input(data_segment)
 			self.code = self.code[len(all_segment):]
 
-			reset_fd(sys.stdin)
-			write_fd(sys.stdin, data_input)
+			clear_fd(self.fdin)
+			write_fd(self.fdin, data_input)
 
 			offset = data_segment.count("\n")
 			self.eval_segment(code_segment, offset)
@@ -118,13 +85,13 @@ class Interpeter:
 				self.local_ns['_'] = result
 
 				if result is not None:
-					print(result)
+					append_fd(self.fdout, repr(result) + "\n")
 				return
 			
 			exec(code, self.global_ns, self.local_ns)
 		except EOFError as e:
 			self.prompt_input(offset)
-			sys.stdout.write("\n")
+			append_fd(self.fdout, "\n")
 			self.write_exc()
 		except Exception as e:
 			self.write_exc()
@@ -134,32 +101,9 @@ class Interpeter:
 	def write_exc(self):
 			etype, value, tb = sys.exc_info()
 			exc = "".join(format_exception(etype, value, tb.tb_next))
-			print(exc, end="")
+			append_fd(self.fdout, exc)
 
-	def dump(self):
-		data = list(self.lines.items())
-		dump(data, sys.__stdout__)
+	@property
+	def output(self):
+		return list(self.lines.items())
 
-def write_error(msg):
-	dump([[-1, msg]], sys.__stdout__)
-
-def main():
-	try:
-		timeout = float(sys.argv[1])
-	except:
-		timeout = DEFAULT_TIMEOUT
-
-	interpreter = Interpeter()
-	
-	thread = Thread(target=interpreter.eval)
-	thread.daemon = True
-	thread.start()
-	thread.join(timeout)
-
-	if not thread.is_alive():
-		interpreter.dump()
-	else:
-		write_error("PyRepl: Timed out")
-
-if __name__ == "__main__":
-	main()
