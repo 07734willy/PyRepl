@@ -36,19 +36,24 @@ class StdinIO(StringIO):
 		return result
 
 class IOBuffer:
+	debug = False
 	def __init__(self):
 		self.stdin  = sys.stdin
 		self.stdout = sys.stdout
 		self.stderr = sys.stderr
 
 	def __enter__(self):
-		sys.stdout = sys.stderr = StringIO()
+		if self.debug:
+			sys.stdout = StringIO()
+		else:
+			sys.stdout = sys.stderr = StringIO()
 		sys.stdin = StdinIO(sys.stdout)
 		return sys.stdin, sys.stdout
 
 	def __exit__(self, type_, value, traceback):
 		sys.stdin  = self.stdin
 		sys.stdout = self.stdout
-		sys.stderr = self.stderr
-		return True
+		if not self.debug:
+			sys.stderr = self.stderr
+			return True
 

@@ -51,7 +51,7 @@ class Interpreter:
 
 	def eval(self, code):
 		self.reset()
-		self.code = code + "\n\n"
+		code = code + "\n\n"
 
 		segments = get_segments(code)
 		for segment in segments:
