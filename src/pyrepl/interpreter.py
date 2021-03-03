@@ -21,9 +21,9 @@ class Interpreter:
 
 		if output:
 			lineno = self.lineno + offset
-			clean_output = strip_newline(output)
-			pyoutput = indent(clean_output, "# out: ", lambda line: True)
-			self.lines[lineno] = pyoutput
+			pyoutput = indent(output, "# out: ", lambda line: True)
+			clean_output = strip_newline(pyoutput)
+			self.lines[lineno] = clean_output
 
 			self.lineno += clean_output.count("\n") + 1
 
