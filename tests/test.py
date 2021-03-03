@@ -38,10 +38,10 @@ from functools import lru_cache
 
 x = 1
 
-@lru_cache
-@lru_cache
+@lru_cache # 1
+@lru_cache # 2
 
-@lru_cache
+@lru_cache # 3
 def test():
 	global x
 	x += 1

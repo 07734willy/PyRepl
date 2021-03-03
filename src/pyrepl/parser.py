@@ -2,12 +2,10 @@ from traceback import format_exception
 import sys
 import re
 
-DECOR_LINE  = r"(?:@.*\n)"
 SOURCE_LINE = r"(?:.*\n)"
 INPUT_LINE  = r"(?:# in: .*\n)"
 EMPTY_LINE  = r"(?:\n|#(?! in: ).*\n)"
 
-PRESOURCES = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{DECOR_LINE})"
 SOURCES    = rf"(?:{EMPTY_LINE}|{INPUT_LINE}|{SOURCE_LINE})"
 EXT_DATA   = rf"(?:{EMPTY_LINE}|{INPUT_LINE})"
 EMPTY      = rf"(?:{EMPTY_LINE})"
@@ -64,7 +62,7 @@ class Segment:
 
 
 def get_next_segment(code):
-	regex = rf"^((({EMPTY}*{PRESOURCES}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
+	regex = rf"^((({EMPTY}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
 	return Segment(*re.match(regex, code).groups())
 
 def get_segments(code):
@@ -73,6 +71,7 @@ def get_segments(code):
 		segment = get_next_segment(code)
 		segments.append(segment)
 		code = code[segment.size:]
+	del segment
 
 	idx = 0
 	while idx < len(segments):
@@ -84,16 +83,15 @@ def get_segments(code):
 		if idx + 1 < len(segments):
 			next_segment = segments[idx+1]
 			new_segment = curr_segment + next_segment
-			if not new_segment.error:
+			if new_segment.error != curr_segment.error:
 				segments[idx] = new_segment
 				del segments[idx+1]
-				idx += 1
 				continue
 
 		if idx - 1 >= 0:
 			prev_segment = segments[idx-1]
 			new_segment = prev_segment + curr_segment
-			if not new_segment.error:
+			if new_segment.error != curr_segment.error:
 				segments[idx-1] = new_segment
 				del segments[idx]
 				continue
