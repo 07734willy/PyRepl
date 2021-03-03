@@ -5,7 +5,7 @@ A vim plugin for executing python code within the buffer, displaying the results
 
 ### Installation
 
-To install the plugin, you'll likely want to use some plugin manager. Below is an example using Vim-Plug, but you're free to use whichever you prefer.
+To install the plugin, you'll likely want to use some plugin manager. Below is an examples using Vim-Plug and Vundle, but you're free to use whichever you prefer.
 
 #### [**Vim-Plug**](https://github.com/junegunn/vim-plug)
 
@@ -15,6 +15,26 @@ Once you've installed Vim-Plug, drop the following into your vimrc, reopen vim, 
 call plug#begin('~/.vim/plugged')
 Plug '07734willy/Vim-PyRepl'
 call plug#end()
+filetype plugin on
+```
+
+#### [**Vundle**](https://github.com/VundleVim/Vundle.vim)
+
+Once you've installed Vundle, drop the following into your vimrc, reopen vim, then `:PluginInstall`.
+
+```vim
+set nocompatible
+filetype off
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+Plugin '07734willy/Vim-PyRepl'
+
+call vundle#end()
 filetype plugin on
 ```
 
