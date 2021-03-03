@@ -24,6 +24,7 @@ endfun
 
 fun! pyrepl#StripOutput() abort
 	call s:DelComments("out")
+	call s:DelComments("warn")
 endfun
 
 fun! pyrepl#StripInput() abort
