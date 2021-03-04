@@ -29,7 +29,7 @@ class Interpreter:
 
 			if not output.endswith("\n"):
 				lineno = self.lineno + offset
-				self.lines[lineno] = f"# warn: Missing trailing newline"
+				self.lines[lineno] = f"# info: missing trailing newline"
 				self.lineno += 1
 
 		clear_fd(self.fdout)

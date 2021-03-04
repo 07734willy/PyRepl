@@ -12,15 +12,15 @@ if g:pyrepl_map_keys
 	nnoremap <buffer> <silent> <leader>c :call pyrepl#StripOutput()<CR>
 endif
 
-syn match PyReplComment '^# \%(in\|out\|warn\): .*' contains=PyReplRest,PyReplIn,PyReplOut,PyReplWarn
+syn match PyReplComment '^# \%(in\|out\|info\): .*' contains=PyReplRest,PyReplIn,PyReplOut,PyReplInfo
 syn match PyReplIn '# in:' contained
 syn match PyReplOut '# out:' contained
-syn match PyReplWarn '# warn:' contained
+syn match PyReplInfo '# info:' contained
 
 if g:pyrepl_set_colors
 	hi PyReplIn ctermfg=green
 	hi PyReplOut ctermfg=darkgrey
-	hi PyReplWarn ctermfg=darkred
+	hi PyReplInfo ctermfg=yellow
 	hi PyReplComment ctermfg=grey
 endif
 
