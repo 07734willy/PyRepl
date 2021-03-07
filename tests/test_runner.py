@@ -1,4 +1,7 @@
 import os
+import sys
+import re
+
 import pytest
 
 from pyrepl import run_code
@@ -14,13 +17,22 @@ def get_test_name(basepath, dirpath, filename):
 	assert filename.endswith(".py")
 	filename, _ = filename.rsplit(".", 1)
 
-	assert filename == "input" or filename == "output"
+	assert filename == "input" or filename == "output" or re.match(r"^output-\d-\d$", filename)
 
 	relpath = os.path.relpath(dirpath, basepath)
 	return relpath.replace(os.path.sep, "_")
 
 def read_file(path, kind):
 	data_path = os.path.join(path, f"{kind}.py")
+
+	if kind == "output":
+		version = sys.version_info
+		filename = f"output-{version.major}-{version.minor}.py"
+		version_data_path = os.path.join(path, filename)
+
+		if os.path.exists(version_data_path):
+			data_path = version_data_path
+
 	with open(data_path, "r") as f:
 		return f.read()
 

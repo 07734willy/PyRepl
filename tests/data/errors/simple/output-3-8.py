@@ -4,7 +4,7 @@ x = 2
 x =
 # out:   File "<string>", line 4
 # out:     x =
-# out:        ^
+# out:       ^
 # out: SyntaxError: invalid syntax
 
 1 // 0
