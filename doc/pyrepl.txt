@@ -20,7 +20,8 @@ CONTENTS                                                     *pyrepl-contents*
 		2.3 Other Functions ........... |PyReplMappings_other|
 	3. Configuration .................. |PyReplConfiguration|
 	    3.1 Eval Timeout .............. |PyReplConfiguration_timeout|
-		3.2 Highlight Groups .......... |PyReplConfiguration_highlight|
+		3.2 Interpreter ............... |PyReplConfiguration_interpeter|
+		3.3 Highlight Groups .......... |PyReplConfiguration_highlight|
     3. License ........................ |PyReplLicense|
     4. Bugs ........................... |PyReplBugs|
     5. Contributing ................... |PyReplContributing|
