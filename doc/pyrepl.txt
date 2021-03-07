@@ -1,0 +1,51 @@
+==============================================================================
+*pyrepl.txt* bringing the python repl to your vim buffers
+
+                    ____        ____            _   ~
+                   |  _ \ _   _|  _ \ ___ _ __ | |  ~
+                   | |_) | | | | |_) / _ \ '_ \| |  ~
+                   |  __/| |_| |  _ <  __/ |_) | |  ~
+                   |_|    \__, |_| \_\___| .__/|_|  ~
+                          |___/          |_|        ~
+
+              Bringing the Python REPL to your Vim buffers
+
+==============================================================================
+CONTENTS                                                     *pyrepl-contents*
+
+    1. Usage .......................... |PyReplUsage|
+    2. Mappings ....................... |PyReplMappings|
+	    2.1 Default Mappings .......... |PyReplMappings_default|
+		2.2 Disable Mappings .......... |PyReplMappings_disable|
+		2.3 Other Functions ........... |PyReplMappings_other|
+	3. Configuration .................. |PyReplConfiguration|
+	    3.1 Eval Timeout .............. |PyReplConfiguration_timeout|
+		3.2 Highlight Groups .......... |PyReplConfiguration_highlight|
+    3. License ........................ |PyReplLicense|
+    4. Bugs ........................... |PyReplBugs|
+    5. Contributing ................... |PyReplContributing|
+
+==============================================================================
+1. Usage                                                         *PyReplUsage*
+
+
+==============================================================================
+2. Mappings                                                   *PyReplMappings*
+
+
+==============================================================================
+3. Configuration                                         *PyReplConfiguration*
+
+
+==============================================================================
+4. License                                                     *PyReplLicense*
+
+
+==============================================================================
+5. Bugs                                                           *PyReplBugs*
+
+
+==============================================================================
+6. Contributing                                           *PyReplContributing*
+
+
