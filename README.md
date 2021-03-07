@@ -60,11 +60,9 @@ let g:pyrepl_interpreter = "python"
 ```
 
 **Mappings**
-```vim
-" Note that the default mappings use the <leader> key
-" By default, <leader> is bound to '\'. You can change this with `let mapleader = ...`
-" You can also freely swap <leader> for something else in any of these mappings, or omit it entirely.
+Note that the default mappings use the <leader> key, which is by default, bound to '\'. You can change this with `let mapleader = ...`. You may also choose to remap functions to something else entirely.
 
+```vim
 " Set this if you intend to set the mappings yourself
 let g:pyrepl_map_keys = 0
 
@@ -80,15 +78,12 @@ nnoremap <buffer> <silent> <leader>c :call pyrepl#StripOutput()<CR>
 ```
 
 **Aesthetics**
-```vim
-" Set this if you intend to set the colors yourself
-let g:pyrepl_set_colors = 0
+Below are the default colors of the highlight groups, feel free to override them
 
-" Below are the default colors of the highlight groups, feel free to override them
+```vim
 hi PyReplIn ctermfg=green
 hi PyReplOut ctermfg=darkgrey
-hi PyReplWarn ctermfg=darkred
+hi PyReplInfo ctermfg=darkred
 hi PyReplComment ctermfg=grey
 ```
-
 
