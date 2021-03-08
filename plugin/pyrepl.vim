@@ -49,10 +49,18 @@ fun! s:EvalCode(start, stop) abort
 	let l:buffersize = line('$')
 	call s:StripComments(a:start, a:stop, 'output')
 	let l:true_stop = a:stop - (l:buffersize - line('$'))
+
+	let l:old_pypath = $PYTHONPATH
 	
 	let l:source = join(getline(a:start, true_stop), "\n")
 	let l:command = g:pyrepl_interpreter . " -m pyrepl " . g:pyrepl_timeout . " " . (a:start - 1)
-	let l:output = system(command, source)
+
+	try
+		let $PYTHONPATH .= ":" . resolve(expand("%:p:h"))
+		let l:output = system(command, source)
+	finally
+		let $PYTHONPATH = old_pypath
+	endtry
 
 	for [lineno, text] in json_decode(output)
 		if lineno == -1
