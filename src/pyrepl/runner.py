@@ -11,7 +11,7 @@ def write_result(output):
 def build_error(msg):
 	return [[-1, msg]]
 
-def run_code(code, timeout, offset):
+def run_code(code, timeout, offset=0):
 	code = "\n" * offset + code
 	with IOBuffer() as (fdin, fdout):
 		interpreter = Interpreter(fdin, fdout)
