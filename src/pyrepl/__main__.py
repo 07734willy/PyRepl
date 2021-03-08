@@ -10,8 +10,14 @@ def main():
 	except:
 		timeout = DEFAULT_TIMEOUT
 
+	try:
+		offset = int(sys.argv[2]) 
+		assert offset >= 0
+	except:
+		offset = 0
+
 	code = sys.stdin.read()
-	result = run_code(code, timeout)
+	result = run_code(code, timeout, offset)
 	write_result(result)
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ fun! s:EvalCode(start, stop) abort
 	let l:true_stop = a:stop - (l:buffersize - line('$'))
 	
 	let l:source = join(getline(a:start, true_stop), "\n")
-	let l:command = g:pyrepl_interpreter . " -m pyrepl " . g:pyrepl_timeout
+	let l:command = g:pyrepl_interpreter . " -m pyrepl " . g:pyrepl_timeout . " " . (a:start - 1)
 	let l:output = system(command, source)
 
 	for [lineno, text] in json_decode(output)
