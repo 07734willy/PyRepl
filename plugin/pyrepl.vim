@@ -20,7 +20,9 @@ fun! s:DelComments(start, stop, keywords) abort
 	let [l:bufnum, l:lnum, l:col, l:off, l:curswant] = getcurpos()
 	let l:mid = s:Clamp(l:lnum, a:start, a:stop)
 
-	sil execute l:mid . "," . a:stop .  "g/^# \\%\\(" . a:keywords . "\\): /d"
+	if l:mid < a:stop
+		sil execute l:mid + 1 . "," . a:stop .  "g/^# \\%\\(" . a:keywords . "\\): /d"
+	endif
 	sil execute a:start . "," . l:mid . "g/^# \\%\\(" . a:keywords . "\\): /d|let l:lnum -= 1"
 
 	call setpos(".", [bufnum, lnum, col, off, curswant])
