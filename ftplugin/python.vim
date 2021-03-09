@@ -4,12 +4,12 @@ if !exists('g:pyrepl_map_keys')
 endif
 
 if g:pyrepl_map_keys
-	nnoremap <buffer> <silent> <leader>ee :PyReplEval<CR>
-	nnoremap <buffer> <silent> <leader>eu :0,PyReplEval<CR>
-	vnoremap <buffer> <silent> <leader>e :'<,'>PyReplEval<CR>
+	nnoremap <buffer> <silent> <localleader>ee :PyReplEval<CR>
+	nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
+	vnoremap <buffer> <silent> <localleader>e :'<,'>PyReplEval<CR>
 
-	nnoremap <buffer> <silent> <leader>c :PyReplStrip output<CR>
-	vnoremap <buffer> <silent> <leader>c :'<,'>PyReplStrip output<CR>
+	nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
+	vnoremap <buffer> <silent> <localleader>c :'<,'>PyReplStrip output<CR>
 endif
 
 syn match PyReplComment '^# \%(in\|out\|info\): .*' contains=PyReplIn,PyReplOut,PyReplInfo
