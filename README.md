@@ -1,7 +1,7 @@
 # Vim-PyRepl 
 ![example workflow](https://github.com/07734willy/Vim-PyRepl/actions/workflows/python-package.yml/badge.svg)
 
-A vim plugin for executing python code within the buffer, displaying the results. A middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
+A vim plugin for executing python code within the buffer, displaying the results. It serves as a middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
 ### Requirements
 
@@ -55,35 +55,37 @@ There are a handful of variables you can set to tweak the plugin's behavior.
 let g:pyrepl_timeout = 1
 
 " This can be changed to the path of the specific executable you wish to have run your code
-" If you are using virtualenv, you should be fine. This is for others who don't use that
+" If you are using virtualenv, you should be fine. This is for others who don't use virtual environments
 let g:pyrepl_interpreter = "python"
 ```
 
 **Mappings**
-Note that the default mappings use the <leader> key, which is by default, bound to '\'. You can change this with `let mapleader = ...`. You may also choose to remap functions to something else entirely.
+Note that the default mappings use the <localleader> key, which is by default, bound to '\'. You can change this with `let maplocalleader = ...`. You may also choose to remap functions to something else entirely.
 
 ```vim
 " Set this if you intend to set the mappings yourself
 let g:pyrepl_map_keys = 0
 
-" By default, buffer evaluation is mapped to <leader>r
-nnoremap <buffer> <silent> <leader>r :call pyrepl#EvalBuffer()<CR>
+" By default, buffer evaluation is mapped to <localleader>ee
+nnoremap <buffer> <silent> <localleader>ee :PyReplEval<CR>
 
-" By default, clearing output is mapped to <leader>c
-nnoremap <buffer> <silent> <leader>c :call pyrepl#StripOutput()<CR>
+" Given a range, PyReplEval will only evaluate code in that region
+" By default, evaluation up to (and including) the current line is bound to <localleader>eu
+nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
 
-" There are two other methods you may wish to map:
-" pyrepl#StripInput()
-" pyrepl#StripAll()
+" By default, clearing output is mapped to <localleader>c
+nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
+
+" Valid arguments to PyReplStrip are `all`, `output`, `input` (default: `output`)
 ```
 
 **Aesthetics**
 Below are the default colors of the highlight groups, feel free to override them
 
 ```vim
+hi PyReplComment ctermfg=grey
 hi PyReplIn ctermfg=green
 hi PyReplOut ctermfg=darkgrey
 hi PyReplInfo ctermfg=darkred
-hi PyReplComment ctermfg=grey
 ```
 
