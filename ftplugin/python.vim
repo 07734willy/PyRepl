@@ -17,20 +17,32 @@ syn match PyReplIn '# in:' contained
 syn match PyReplOut '# out:' contained
 syn match PyReplInfo '# info:' contained
 
-fun! s:GetHighlightColor(name, default) abort
-	let l:colorval = synIDattr(synIDtrans(hlID(a:name)), "fg")
-	return colorval == "" ? a:default : colorval
+fun! s:GetHighlightColors(name, fgdefault, bgdefault) abort
+	let l:synid = synIDtrans(hlID(a:name))
+	let l:fgcolor = synIDattr(synid, "fg")
+	let l:bgcolor = synIDattr(synid, "bg")
+
+	let l:fgcolor = fgcolor == "" ? a:fgdefault : fgcolor
+	let l:bgcolor = bgcolor == "" ? a:bgdefault : bgcolor
+	return [fgcolor, bgcolor]
 endfun
 
-fun! s:SetDefaultHighlight(name, value) abort
-	let l:colorval = s:GetHighlightColor(a:name, a:value)
-	execute "hi " . a:name . " ctermfg=" . colorval
+fun! s:SetDefaultHighlight(name, colorvals) abort
+	let [l:fgcolor, l:bgcolor] = a:colorvals
+	let [l:fgcolor, l:bgcolor] = s:GetHighlightColors(a:name, fgcolor, bgcolor)
+
+	if fgcolor != ""
+		execute "hi " . a:name . " ctermfg=" . fgcolor 
+	endif
+	if bgcolor != ""
+		execute "hi " . a:name . " ctermbg=" . bgcolor 
+	endif
 endfun
 
-let s:color_pyrepl_in      = s:GetHighlightColor("PyReplIn", "green")
-let s:color_pyrepl_out     = s:GetHighlightColor("PyReplOut", "darkgrey")
-let s:color_pyrepl_info    = s:GetHighlightColor("PyReplInfo", "yellow")
-let s:color_pyrepl_comment = s:GetHighlightColor("PyReplComment", "grey")
+let s:color_pyrepl_in      = s:GetHighlightColors("PyReplIn", "green", "")
+let s:color_pyrepl_out     = s:GetHighlightColors("PyReplOut", "darkgrey", "")
+let s:color_pyrepl_info    = s:GetHighlightColors("PyReplInfo", "yellow", "")
+let s:color_pyrepl_comment = s:GetHighlightColors("PyReplComment", "grey", "")
 
 fun! s:SetDefaultColors() abort
 	call s:SetDefaultHighlight("PyReplIn", s:color_pyrepl_in)
