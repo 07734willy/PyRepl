@@ -1,11 +1,17 @@
 # Vim-PyRepl 
 ![example workflow](https://github.com/07734willy/Vim-PyRepl/actions/workflows/python-package.yml/badge.svg)
 
-                                                                      |                                             
-:--------------------------------------------------------------------:|:--------------------------------------------------------------------:
-![](https://github.com/07734willy/Vim-PyRepl/screenshots/image0.png)  |  ![](https://github.com/07734willy/Vim-PyRepl/screenshots/image1.png)
-
 A vim plugin for executing python code within the buffer, displaying the results. It serves as a middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
+
+### Screenshots
+
+Here are a couple of example screenshots, just to give a feel for how it functions.
+
+<details>
+  <summary>Screenshots</summary>
+  
+<img src="screenshots/image0.png" width="425"/> <img src="screenshots/image1.png" width="425"/>
+</details>
 
 ### Requirements
 
@@ -53,6 +59,7 @@ filetype plugin on
 There are a handful of variables you can set to tweak the plugin's behavior.
 
 **Behavioral**
+
 ```vim
 " Dictates how long (in seconds) to wait before killing the python process
 " Note that since vim is single-threaded, it will hang until the python process terminates
@@ -64,6 +71,7 @@ let g:pyrepl_interpreter = "python"
 ```
 
 **Mappings**
+
 Note that the default mappings use the <localleader> key, which is by default, bound to '\'. You can change this with `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
 
 ```vim
@@ -87,6 +95,7 @@ nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
 ```
 
 **Aesthetics**
+  
 Below are the default colors of the highlight groups, feel free to override them
 
 ```vim
@@ -99,4 +108,5 @@ highlight PyReplInfo    ctermfg=yellow
 # Links
 
 Github: https://github.com/07734willy/Vim-PyRepl
+  
 Vim.org: 
