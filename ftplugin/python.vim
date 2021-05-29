@@ -1,9 +1,9 @@
 
-if !exists('g:pyrepl_map_keys')
-	let g:pyrepl_map_keys = 1
+if !exists('g:pyrepl_mapkeys')
+	let g:pyrepl_mapkeys = 1
 endif
 
-if g:pyrepl_map_keys
+if g:pyrepl_mapkeys
 	nnoremap <buffer> <silent> <localleader>ee :PyReplEval<CR>
 	nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
 	vnoremap <buffer> <silent> <localleader>e :'<,'>PyReplEval<CR>

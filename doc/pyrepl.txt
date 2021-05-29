@@ -1,5 +1,5 @@
 ==============================================================================
-*pyrepl.txt* bringing the python repl to your vim buffers
+*pyrepl.txt* bringing the python repl to your vim buffer
 
                     ____        ____            _   ~
                    |  _ \ _   _|  _ \ ___ _ __ | |  ~
@@ -8,45 +8,142 @@
                    |_|    \__, |_| \_\___| .__/|_|  ~
                           |___/          |_|        ~
 
-              Bringing the Python REPL to your Vim buffers
+              Bringing the Python REPL to your Vim buffer
 
 ==============================================================================
 CONTENTS                                                     *pyrepl-contents*
 
     1. Usage .......................... |PyReplUsage|
     2. Mappings ....................... |PyReplMappings|
-	    2.1 Default Mappings .......... |PyReplMappings_default|
-		2.2 Disable Mappings .......... |PyReplMappings_disable|
-		2.3 Other Functions ........... |PyReplMappings_other|
-	3. Configuration .................. |PyReplConfiguration|
-	    3.1 Eval Timeout .............. |PyReplConfiguration_timeout|
-		3.2 Interpreter ............... |PyReplConfiguration_interpeter|
-		3.3 Highlight Groups .......... |PyReplConfiguration_highlight|
-    3. License ........................ |PyReplLicense|
-    4. Bugs ........................... |PyReplBugs|
-    5. Contributing ................... |PyReplContributing|
+	    2.1 Eval ...................... |PyReplEval|
+		2.2 Eval Until ................ |PyReplEvalUntil|
+		2.3 Clear ..................... |PyReplClear|
+	3. Configuration .................. |PyReplConfig|
+		3.1 Key Mapping ............... |PyReplConfig_mapkeys|
+	    3.2 Eval Timeout .............. |PyReplConfig_timeout|
+		3.3 Interpreter ............... |PyReplConfig_interpreter|
+		3.4 Highlight Groups .......... |PyReplConfig_highlight|
+    4. License ........................ |PyReplLicense|
+    5. Bugs ........................... |PyReplBugs|
+    6. Contributing ................... |PyReplContributing|
 
 ==============================================================================
 1. Usage                                                         *PyReplUsage*
 
+There are only two commands in PyRepl, |PyReplEval| and |PyReplClear|. 
+
+|PyReplEval| evaluates the current contents of the buffer in a python 
+interpreter, inlining the output as if in a REPL.
+
+|PyReplClear| clears the output from prior evaluations.
+
+Both commands support address ranges. 
 
 ==============================================================================
 2. Mappings                                                   *PyReplMappings*
 
+PyRepl defines a handful of mappings for usage out of the box, however its
+highly recommended to override these mappings. See |PyReplConfig_keymap|.
+
+------------------------------------------------------------------------------
+2.1 Eval                                                          *PyReplEval*
+
+Bound to: <localleader>ee
+
+Evaluates the contents of the entire buffer in a python interpeter, and then
+inlines the output.
+
+------------------------------------------------------------------------------
+2.2 Eval Until                                               *PyReplEvalUntil*
+
+Bound to: <localleader>eu
+
+Evaluates the contents of the buffer up to the current line in a python
+interpeter, and then inlines the results.
+
+------------------------------------------------------------------------------
+2.3 Clear                                                        *PyReplClear*
+
+Bound to: <localleader>c
+
+Clears the output of prior evaluations from the buffer, leaving just source
+code and input statements.
 
 ==============================================================================
-3. Configuration                                         *PyReplConfiguration*
+3. Configuration                                                *PyReplConfig*
 
+You can configure the following settings to change how PyRepl works.
+
+------------------------------------------------------------------------------
+3.1 Key Mapping                                          *PyReplConfig_mapkeys*
+
+Variable:  g:pyrepl_mapkeys
+
+Set this to 0 to disable the builtin mappings, so you can configure your own.
+Below are the default mappings, for demonstration: >
+	
+	nnoremap <buffer> <silent> <localleader>ee :PyReplEval<CR>
+	nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
+	vnoremap <buffer> <silent> <localleader>e :'<,'>PyReplEval<CR>
+
+	nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
+	vnoremap <buffer> <silent> <localleader>c :'<,'>PyReplStrip output<CR>
+
+Its recommended to consider setting your mappings within `ftplugin/Python.vim`
+in your vim directory, so these mappings only affect buffers of the filetype
+'python'.
+
+------------------------------------------------------------------------------
+3.2 Eval Timeout                                        *PyReplConfig_timeout*
+
+Variable:  g:pyrepl_timeout
+
+Set this to the number of seconds before the PyRepl should timeout on the
+evaluation and return to the editor. Defaults to 1 second. 
+
+Set this to 0 to disable the timeout. Not Recommended.
+
+Supports floating point values.
+
+------------------------------------------------------------------------------
+3.3 Interpreter                                     *PyReplConfig_interpreter*
+
+Variable:  g:pyrepl_interpreter
+
+Set this to the name of the command to launch the python interpeter. On many
+systems, this is just 'python'.
+
+By default the following will be attempted, in order, if no interpreter is
+provided: `python3`, `python`, `py`.
+
+------------------------------------------------------------------------------
+3.4 Highlight Groups                                  *PyReplConfig_highlight*
+
+You can change the color of the inline ouput by overriding these highlight
+groups: `PyReplComment`, `PyReplIn`, `PyReplOut`, `PyReplInfo`. Below are
+the default assignments: >
+
+	highlight PyReplComment ctermfg=grey
+	highlight PyReplIn      ctermfg=green
+	highlight PyReplOut     ctermfg=darkgrey
+	highlight PyReplInfo    ctermfg=yellow
+
+You may also choose to override the background color with `ctermbg`.
 
 ==============================================================================
 4. License                                                     *PyReplLicense*
 
+PyRepl is licensed under the MIT License.
 
 ==============================================================================
 5. Bugs                                                           *PyReplBugs*
 
+Please report bugs on the issue tracker:
+https://github.com/07734willy/Vim-PyRepl/issues
 
 ==============================================================================
 6. Contributing                                           *PyReplContributing*
 
+Thing you can make this plugin better? Great!
+Submit a pull request to: https://github.com/07734willy/Vim-PyRepl
 

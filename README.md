@@ -7,11 +7,11 @@ A vim plugin for executing python code within the buffer, displaying the results
 
 This plugin requires Python 3.7+ to evaluate your python script. It has been tested to work on Python 3.6.9, however tests are not ran automatically against this version, and thus it may break in the future.
 
-Tested on with both Vim and NeoVim, specifically Vim 8.0 and NeoVim 0.4.3. However, its very likely that this plugin will work on older versions, since it doesn't do anything too crazy vim-side.
+Tested on with both Vim 8.0 and NeoVim 0.4.3, however its very likely that this plugin will work on older versions, since it doesn't do anything too crazy vim-side.
 
 ### Installation
 
-To install the plugin, you'll likely want to use some plugin manager. Below is an examples using Vim-Plug and Vundle, but you're free to use whichever you prefer.
+To install the plugin, you'll likely want to use some plugin manager. Below are examples using Vim-Plug and Vundle, but you're free to use whichever plugin manager you prefer.
 
 #### [**Vim-Plug**](https://github.com/junegunn/vim-plug)
 
@@ -60,20 +60,23 @@ let g:pyrepl_interpreter = "python"
 ```
 
 **Mappings**
-Note that the default mappings use the <localleader> key, which is by default, bound to '\'. You can change this with `let maplocalleader = ...`. You may also choose to remap functions to something else entirely.
+Note that the default mappings use the <localleader> key, which is by default, bound to '\'. You can change this with `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
 
 ```vim
-" Set this if you intend to set the mappings yourself
-let g:pyrepl_map_keys = 0
+" Add this statement if you intend to set the mappings yourself
+let g:pyrepl_mapkeys = 0
 
 " By default, buffer evaluation is mapped to <localleader>ee
+" Mnemonic: "Evaluate [to] End" or "Evaluate Everything"
 nnoremap <buffer> <silent> <localleader>ee :PyReplEval<CR>
 
 " Given a range, PyReplEval will only evaluate code in that region
-" By default, evaluation up to (and including) the current line is bound to <localleader>eu
+" By default, evaluation up until (and including) the current line is bound to <localleader>eu
+" Mnemonic: "Evaluate Until [line]"
 nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
 
 " By default, clearing output is mapped to <localleader>c
+" Mnemonic: "Clear"
 nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
 
 " Valid arguments to PyReplStrip are `all`, `output`, `input` (default: `output`)
@@ -83,9 +86,13 @@ nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
 Below are the default colors of the highlight groups, feel free to override them
 
 ```vim
-hi PyReplComment ctermfg=grey
-hi PyReplIn ctermfg=green
-hi PyReplOut ctermfg=darkgrey
-hi PyReplInfo ctermfg=darkred
+highlight PyReplComment ctermfg=grey
+highlight PyReplIn      ctermfg=green
+highlight PyReplOut     ctermfg=darkgrey
+highlight PyReplInfo    ctermfg=yellow
 ```
 
+# Links
+
+Github: https://github.com/07734willy/Vim-PyRepl
+Vim.org: 
