@@ -7,8 +7,10 @@ endif
 if !exists("g:pyrepl_interpreter")
 	if executable("python3")
 		let g:pyrepl_interpreter = "python3"
-	else
+	elseif executable("python")
 		let g:pyrepl_interpreter = "python"
+	elseif executable("py")
+		let g:pyrepl_interpreter = "py"
 	endif
 endif
 
@@ -48,6 +50,12 @@ fun! s:StripOptions(ArgLead, CmdLine, CursorPos) abort
 endfun
 
 fun! s:EvalCode(start, stop) abort
+	if !exists("g:pyrepl_interpreter")
+		echohl ErrorMsg
+		echomsg "PyRepl: No Interpreter"
+		echohl None
+		return
+	endif
 	let l:buffersize = line('$')
 	call s:StripComments(a:start, a:stop, 'output')
 	let l:true_stop = a:stop - (l:buffersize - line('$'))
