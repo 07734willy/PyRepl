@@ -13,6 +13,10 @@ def build_error(msg):
 
 def run_code(code, timeout, offset=0):
 	code = "\n" * offset + code
+	
+	if timeout <= 0:
+		timeout = None
+
 	with IOBuffer() as (fdin, fdout):
 		interpreter = Interpreter(fdin, fdout)
 		thread = Thread(target=interpreter.eval, args=(code,))
