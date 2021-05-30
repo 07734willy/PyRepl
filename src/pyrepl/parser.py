@@ -102,7 +102,7 @@ def get_segments_old(code):
 		idx += 1
 	return segments
 
-def get_segments(code):
+def get_segments_new(code):
 	blocks = get_code_blocks(code)
 	
 	segments = []
@@ -116,6 +116,16 @@ def get_segments(code):
 
 		segment = Segment(block, data, body)
 		segments.append(segment)
+
+	return segments
+
+USE_OLD_SEGMENTATION = False
+
+def get_segments(code):
+	if USE_OLD_SEGMENTATION:
+		segments = get_segments_old(code)
+	else:
+		segments = get_segments_new(code)
 
 	return segments
 
