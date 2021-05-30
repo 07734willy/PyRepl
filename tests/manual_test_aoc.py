@@ -101,17 +101,19 @@ def run_script(filepath):
 	with open(filepath, "r") as f:
 		code = f.read()
 
-	timeout = 0.1
+	timeout = 1
 	offset = 0
 
 	try:
-		pyrepl.parser.USE_OLD_SEGMENTATION = False
-		result1 = run_code(code, timeout, offset)
 		pyrepl.parser.USE_OLD_SEGMENTATION = True
 		result2 = run_code(code, timeout, offset)
+		pyrepl.parser.USE_OLD_SEGMENTATION = False
+		result1 = run_code(code, timeout, offset)
 
 		if result1 != result2:
 			print(f'differing: {filepath}')
+			print(result1)
+			print(result2)
 		else:
 			print('equal')
 	except:
