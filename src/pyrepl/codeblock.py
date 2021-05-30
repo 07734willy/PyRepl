@@ -1,5 +1,6 @@
 from code import InteractiveConsole
 from itertools import cycle, zip_longest
+from copy import copy, deepcopy
 import sys
 import ast
 import re
@@ -46,6 +47,7 @@ class Parser:
 		self.console_queue = None
 		self.interpreter_queue = None
 		self.code_blocks = []
+		self.core_console = DryRunConsole()
 
 	def queue_lines(self):
 		if self.console_queue is None:
@@ -55,15 +57,13 @@ class Parser:
 			self.console_queue     += f"\n{self.console_lines}"
 			self.interpreter_queue += f"\n{self.interpreter_lines}"
 
+		return self.core_console.push(self.console_lines)
+
 	def add_lines(self):
-		console = self.new_console()
+		flush = not self.queue_lines()
 
-		self.queue_lines()
-		flush = not console.push(self.console_lines)
-		#print(flush, repr(self.console_lines))
-
-		if console.error:
-			self.consume_error_lines(console)
+		if self.core_console.error:
+			self.consume_error_lines()
 		
 		if flush:
 			self.flush_lines()
@@ -71,13 +71,12 @@ class Parser:
 	def flush_lines(self):
 		if self.interpreter_queue is not None:
 			self.code_blocks.append(self.interpreter_queue)
+		self.core_console.reset()
 		self.console_queue = None
 		self.interpreter_queue = None
 	
 	def new_console(self):
-		console = DryRunConsole()
-		if self.console_queue:
-			console.push(self.console_queue)
+		console = deepcopy(self.core_console)
 		return console
 
 	def pop_future_lines(self, line, lines):
@@ -89,47 +88,6 @@ class Parser:
 
 	def fill_spaces(self, lines):
 		return ["#" if is_empty(line) else line for line in lines]
-
-	def _parse_nonempty_line(self, line):
-		if not is_empty(line):
-			#print(1)
-			self.console_lines = line
-			self.add_lines()
-			return True
-		return False
-
-	def _parse_pending_space_line(self, line, console):
-		pending_with_space = console.push(line)
-		if pending_with_space:
-			# NO SPLIT
-			#print(2)
-			self.console_lines = line
-			self.add_lines()
-			return True
-		return False
-
-	def set_future_lines(self, line):
-		future_lines = self.pop_future_lines(line, self.lines)
-		self.future_line = "\n".join(future_lines)
-
-		future_lines_nospace = self.fill_spaces(future_lines)
-		self.future_line_nospace = "\n".join(future_lines_nospace)
-
-	def consume_error_lines(self, console):
-		while self.lines:
-			line = self.lines.pop()
-			console.reset()
-
-			self.interpreter_lines = line
-			self.console_lines = line
-		
-			console.push(line)
-			if is_functional(line) and not console.error:
-				self.lines.append(line)
-				break
-			else:
-				self.queue_lines()
-		self.flush_lines()
 
 	def _parse_nonempty_line(self, line):
 		if is_empty(line):
@@ -147,7 +105,6 @@ class Parser:
 			return True
 
 		return False
-
 
 	def _parse_normal_nonempty_line(self, line, console):
 		console.push(line)
@@ -192,20 +149,21 @@ class Parser:
 		future_lines_nospace = self.fill_spaces(future_lines)
 		self.future_line_nospace = "\n".join(future_lines_nospace)
 
-	def consume_error_lines(self, console):
+	def consume_error_lines(self):
 		while self.lines:
 			line = self.lines.pop()
-			console.reset()
+			self.core_console.reset()
 
 			self.interpreter_lines = line
 			self.console_lines = line
 		
-			console.push(line)
-			if is_functional(line) and not console.error:
+			self.core_console.push(line)
+			if is_functional(line) and not self.core_console.error:
 				self.lines.append(line)
 				break
 			else:
 				self.queue_lines()
+		self.core_console.reset()
 		self.flush_lines()
 
 	def _parse_nospace_noerror_future_lines(self, console):
@@ -299,11 +257,11 @@ def merge_noninfluencial_blocks(blocks):
 	return output
 
 
-def skew_block_padding(blocks):
-	if not blocks:
-		return blocks
+def skew_block_padding(raw_blocks):
+	if not raw_blocks:
+		return raw_blocks
 	
-	blocks = [b + '\n' for b in blocks[:-1]] + blocks[-1:]
+	blocks = [b + '\n' for b in raw_blocks[:-1]] + raw_blocks[-1:]
 	blocks = merge_noninfluencial_blocks(blocks)
 
 	paddings, bodies = zip(*[get_block_prefix_padding(block) for block in blocks])
@@ -311,6 +269,7 @@ def skew_block_padding(blocks):
 
 	new_blocks = ["".join(pair) for pair in new_pairs]
 	new_blocks[0] = paddings[0] + new_blocks[0]
+	assert "\n".join(raw_blocks) == "".join(new_blocks)
 	return new_blocks
 
 def get_block_prefix_padding(block):
