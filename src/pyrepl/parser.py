@@ -38,7 +38,7 @@ class Segment:
 			return "".join(format_exception(type(e), e, e.__traceback__))
 
 	def parse_input(self):
-		regex = r"# in: (.*\n)"
+		regex = r"(?<!.)# in: (.*\n)"
 		matches = re.finditer(regex, self.data)
 		
 		data = "".join(match.group(1) for match in matches)
@@ -103,14 +103,12 @@ def get_segments_old(code):
 	return segments
 
 def get_segments(code):
-
 	blocks = get_code_blocks(code)
-	blocks = [b + '\n' for b in blocks[:-1]] + blocks[-1:]
 	
 	segments = []
 	for block in blocks:
 		body, padding = get_block_postfix_padding(block)
-		match = re.match(r"[\s\S]*(?!.)# in: (?:.*\n)", block)
+		match = re.match(r"[\s\S]*(?<!.)# in: (?:.*\n)", padding)
 		
 		data = body
 		if match:

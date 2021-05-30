@@ -288,9 +288,23 @@ class Parser:
 		skewed_blocks = skew_block_padding(self.code_blocks)
 		return skewed_blocks
 
+def merge_noninfluencial_blocks(blocks):
+	output = blocks[:1]
+
+	for block in blocks[1:]:
+		if not is_influential(block):
+			output.append(output.pop() + block)
+		else:
+			output.append(block)
+	return output
+
+
 def skew_block_padding(blocks):
 	if not blocks:
 		return blocks
+	
+	blocks = [b + '\n' for b in blocks[:-1]] + blocks[-1:]
+	blocks = merge_noninfluencial_blocks(blocks)
 
 	paddings, bodies = zip(*[get_block_prefix_padding(block) for block in blocks])
 	new_pairs = zip_longest(bodies, paddings[1:], fillvalue="")
@@ -330,6 +344,6 @@ def get_block_postfix_padding(block):
 def get_code_blocks(code):
 	parser = Parser()
 	blocks = parser.parse(code)
-	assert "\n".join(blocks) == code
+	assert "".join(blocks) == code
 	return blocks
 	
