@@ -36,7 +36,7 @@ class StdinIO(StringIO):
 		return result
 
 class IOBuffer:
-	debug = False
+	debug = True
 	def __init__(self):
 		self.stdin  = sys.stdin
 		self.stdout = sys.stdout

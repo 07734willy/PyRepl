@@ -2,6 +2,8 @@ from traceback import format_exception
 import sys
 import re
 
+from .codeblock import get_code_blocks, get_block_postfix_padding
+
 DOT = r"(?:(?<!\\)(?:\\\\)*\\\n|.)"
 SOURCE_LINE = rf"(?:{DOT}*\n)"
 INPUT_LINE  = rf"(?:# in: {DOT}*\n)"
@@ -66,7 +68,7 @@ def get_next_segment(code):
 	regex = rf"^((({EMPTY}*{SOURCES}+?){EXT_DATA}*?){EMPTY}*)(?=[^\s#]|$)"
 	return Segment(*re.match(regex, code).groups())
 
-def get_segments(code):
+def get_segments_old(code):
 	segments = []
 	while code:
 		segment = get_next_segment(code)
@@ -100,4 +102,22 @@ def get_segments(code):
 		idx += 1
 	return segments
 
+def get_segments(code):
+
+	blocks = get_code_blocks(code)
+	blocks = [b + '\n' for b in blocks[:-1]] + blocks[-1:]
+	
+	segments = []
+	for block in blocks:
+		body, padding = get_block_postfix_padding(block)
+		match = re.match(r"[\s\S]*(?!.)# in: (?:.*\n)", block)
+		
+		data = body
+		if match:
+			data += match.group(0)
+
+		segment = Segment(block, data, body)
+		segments.append(segment)
+
+	return segments
 
