@@ -1,5 +1,7 @@
 from code import InteractiveConsole
-from itertools import cycle, zip_longest
+from codeop import CommandCompiler
+from contextlib import suppress
+from itertools import cycle, zip_longest, chain
 from copy import copy, deepcopy
 import sys
 import ast
@@ -19,11 +21,71 @@ class Compile:
 class DryRunConsole(InteractiveConsole):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.error = None
-		# self.compile.compiler = Compile(self.compile.compiler) 
 
-	def runcode(self, *args, **kwargs):
-		pass
+		self.compile.compiler = Compile(self.compile.compiler) 
+
+		self.error = None
+		self.codeobj = None
+		# self.compile.compiler = Compile(self.compile.compiler) 
+	
+	@profile
+	def runsource(self, source, filename="<input>", symbol="single"):
+		self.codeobj = None
+		try:
+			self.codeobj = self.compile(source, filename, symbol)
+			return self.codeobj is None
+		except (OverflowError, SyntaxError, ValueError):
+			self.showsyntaxerror(filename)
+			return False
+
+	@profile
+	def push(self, line, optimize=True):
+		if self.buffer:
+			combined_lines = line + "\n" + self.buffer[-1]
+			if not is_influential(combined_lines):
+				return True
+
+		retval = super().push(line)
+		if optimize:
+			self.optimize_buffer()
+		return retval
+
+	@profile
+	def clone(self):
+		console = DryRunConsole()
+		console.buffer = list(self.buffer)
+		return console
+
+	@profile
+	def optimize_buffer(self):
+		if not self.buffer:
+			return
+
+		if len(self.buffer) < 8:
+			return
+
+		console = self.clone()
+		pending = console.push("", optimize=False)
+		if pending or console.error:
+			return
+		
+		"""
+		print("Optimized buffer from:", file=sys.stderr)
+		print("-" * 40, file=sys.stderr)
+		print("\n".join(self.buffer), file=sys.stderr)
+		print("-" * 40, file=sys.stderr)
+		"""
+
+		deletion_ranges = list(get_deletion_ranges(console.codeobj))
+		for begin_lineno, end_lineno in deletion_ranges[::-1]:
+			del self.buffer[begin_lineno:end_lineno]
+	
+		"""
+		print("To new buffer:", file=sys.stderr)
+		print("-" * 40, file=sys.stderr)
+		print("\n".join(self.buffer), file=sys.stderr)
+		print("-" * 40, file=sys.stderr)
+		"""
 
 	def showsyntaxerror(self, *args, **kwargs):
 		_, error_val, _ = sys.exc_info()
@@ -33,11 +95,41 @@ class DryRunConsole(InteractiveConsole):
 		self.error = None
 		self.resetbuffer()
 
+@profile
+def get_deletion_ranges(root):
+	if not hasattr(root, "body"):
+		return
+
+	children = root.body
+	if not children:
+		return
+
+	*rest_nodes, last_node = children 
+	
+	with suppress(ValueError):
+		begin_lineno = min(chain.from_iterable(ast_get_begin_linenos(node) for node in rest_nodes))
+		end_lineno   = max(chain.from_iterable(ast_get_end_linenos(node)   for node in rest_nodes))
+		yield begin_lineno, end_lineno
+
+	yield from get_deletion_ranges(last_node)
+
+
+@profile
+def ast_get_begin_linenos(root):
+	return [node.lineno-1 for node in ast.walk(root) if hasattr(node, 'lineno')]
+
+@profile
+def ast_get_end_linenos(root):
+	return [node.end_lineno for node in ast.walk(root) if hasattr(node, 'end_lineno')]
+	
+
 def is_functional(raw_line):
 	line = f"{raw_line}\n "
 	return is_influential(line)
 
 def is_influential(line):
+	if is_empty(line):
+		return False
 	try:
 		tree = ast.parse(line)
 		nodes = ast.iter_child_nodes(tree)
@@ -46,8 +138,7 @@ def is_influential(line):
 		return True
 
 def is_empty(line):
-	match = re.match(r"^\s*$", line)
-	return bool(match)
+	return not line.strip()
 
 class Parser:
 	def __init__(self):
@@ -87,8 +178,7 @@ class Parser:
 	
 	@profile
 	def new_console(self):
-		console = DryRunConsole()
-		console.buffer = list(self.core_console.buffer)
+		console = self.core_console.clone()
 		return console
 
 	@profile

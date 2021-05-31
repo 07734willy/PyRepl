@@ -101,7 +101,7 @@ def run_script(filepath):
 	with open(filepath, "r") as f:
 		code = f.read()
 
-	timeout = 1
+	timeout = 0.1
 	offset = 0
 
 	try:
@@ -114,6 +114,8 @@ def run_script(filepath):
 			print(f'differing: {filepath}')
 			print(result1)
 			print(result2)
+		elif result1 == result2 == []:
+			print('empty')
 		else:
 			print('equal')
 	except:
