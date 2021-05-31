@@ -44,7 +44,6 @@ class Interpreter:
 		self.lines = {}
 
 		self.global_ns = {}
-		self.local_ns = {}
 
 		clear_fd(self.fdin)
 		clear_fd(self.fdout)
@@ -69,22 +68,20 @@ class Interpreter:
 		code = "\n" * self.lineno + code_segment
 		try:
 			with suppress(SyntaxError):
-				result = eval(code, self.global_ns, self.local_ns)
-				self.local_ns['_'] = result
+				result = eval(code, self.global_ns)
+				self.global_ns['_'] = result
 
 				if result is not None:
 					append_fd(self.fdout, repr(result) + "\n")
 				return
 			
-			exec(code, self.global_ns, self.local_ns)
+			exec(code, self.global_ns)
 		except EOFError as e:
 			self.prompt_input(offset)
 			append_fd(self.fdout, "\n")
 			self.write_exc()
 		except Exception as e:
 			self.write_exc()
-		finally:
-			self.global_ns.update(self.local_ns)
 
 	def write_exc(self):
 		etype, value, tb = sys.exc_info()
