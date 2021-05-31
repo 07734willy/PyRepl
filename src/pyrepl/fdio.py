@@ -43,12 +43,13 @@ class IOBuffer:
 		self.stderr = sys.stderr
 
 	def __enter__(self):
+		sys.stdout = StringIO()
 		if self.debug:
-			sys.stdout = StringIO()
+			stderr = StringIO()
 		else:
-			sys.stdout = sys.stderr = StringIO()
+			stderr = sys.stderr = StringIO()
 		sys.stdin = StdinIO(sys.stdout)
-		return sys.stdin, sys.stdout
+		return sys.stdin, sys.stdout, stderr
 
 	def __exit__(self, type_, value, traceback):
 		sys.stdin  = self.stdin

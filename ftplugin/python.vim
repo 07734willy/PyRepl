@@ -12,10 +12,11 @@ if g:pyrepl_mapkeys
 	vnoremap <buffer> <silent> <localleader>c :'<,'>PyReplStrip output<CR>
 endif
 
-syn match PyReplComment '^# \%(in\|out\|info\): .*' contains=PyReplIn,PyReplOut,PyReplInfo
+syn match PyReplComment '^# \%(in\|out\|info\|error\): .*' contains=PyReplIn,PyReplOut,PyReplInfo,PyReplError
 syn match PyReplIn '# in:' contained
 syn match PyReplOut '# out:' contained
 syn match PyReplInfo '# info:' contained
+syn match PyReplError '# error:' contained
 
 fun! s:GetHighlightColors(name, fgdefault, bgdefault) abort
 	let l:synid = synIDtrans(hlID(a:name))
@@ -42,12 +43,14 @@ endfun
 let s:color_pyrepl_in      = s:GetHighlightColors("PyReplIn", "green", "")
 let s:color_pyrepl_out     = s:GetHighlightColors("PyReplOut", "darkgrey", "")
 let s:color_pyrepl_info    = s:GetHighlightColors("PyReplInfo", "yellow", "")
+let s:color_pyrepl_error   = s:GetHighlightColors("PyReplError", "darkyellow", "")
 let s:color_pyrepl_comment = s:GetHighlightColors("PyReplComment", "grey", "")
 
 fun! s:SetDefaultColors() abort
 	call s:SetDefaultHighlight("PyReplIn", s:color_pyrepl_in)
 	call s:SetDefaultHighlight("PyReplOut", s:color_pyrepl_out)
 	call s:SetDefaultHighlight("PyReplInfo", s:color_pyrepl_info)
+	call s:SetDefaultHighlight("PyReplError", s:color_pyrepl_error)
 	call s:SetDefaultHighlight("PyReplComment", s:color_pyrepl_comment)
 endfun
 

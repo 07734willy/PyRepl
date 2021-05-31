@@ -12,27 +12,36 @@ def strip_newline(text):
 	return text
 
 class Interpreter:
-	def __init__(self, fdin, fdout):
+	def __init__(self, fdin, fdout, fderr):
 		self.fdin = fdin
 		self.fdout = fdout
+		self.fderr = fderr
 
 	def process_output(self, offset):
 		output = read_fd(self.fdout)
+		errput = read_fd(self.fderr)
 
-		if output:
+		def put_data(data, label):
+			if not data:
+				return
+
 			lineno = self.lineno + offset
-			pyoutput = indent(output, "# out: ", lambda line: True)
-			clean_output = strip_newline(pyoutput)
-			self.lines[lineno] = clean_output
+			pydata = indent(data, f"# {label}: ", lambda line: True)
+			clean_data = strip_newline(pydata)
+			self.lines[lineno] = clean_data
 
-			self.lineno += clean_output.count("\n") + 1
+			self.lineno += clean_data.count("\n") + 1
 
-			if not output.endswith("\n"):
+			if not data.endswith("\n"):
 				lineno = self.lineno + offset
 				self.lines[lineno] = f"# info: missing trailing newline"
 				self.lineno += 1
 
+		put_data(output, "out")
+		put_data(errput, "error")
+
 		clear_fd(self.fdout)
+		clear_fd(self.fderr)
 
 	def prompt_input(self, offset):
 		lineno = self.lineno + offset
@@ -47,6 +56,7 @@ class Interpreter:
 
 		clear_fd(self.fdin)
 		clear_fd(self.fdout)
+		clear_fd(self.fderr)
 
 	def eval(self, code):
 		self.reset()
@@ -86,7 +96,7 @@ class Interpreter:
 	def write_exc(self):
 		etype, value, tb = sys.exc_info()
 		exc = "".join(format_exception(etype, value, tb.tb_next))
-		append_fd(self.fdout, exc)
+		append_fd(self.fderr, exc)
 
 	@property
 	def output(self):

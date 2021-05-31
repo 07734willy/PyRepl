@@ -34,11 +34,13 @@ fun! s:StripComments(start, stop, ...) abort
 	let l:mode = get(a:, 1, 'output')
 
 	if l:mode == "all"
-		let l:regex = "in\\|out\\|info"
+		let l:regex = "in\\|out\\|info\\|error"
 	elseif l:mode == "output"
-		let l:regex = "out\\|info"
+		let l:regex = "out\\|info\\|error"
 	elseif l:mode == "input"
 		let l:regex = "in"
+	elseif l:mode == "error"
+		let l:regex = "error"
 	else
 		echoerr "Invalid Option: " . l:mode
 	endif
@@ -46,7 +48,7 @@ fun! s:StripComments(start, stop, ...) abort
 endfun
 
 fun! s:StripOptions(ArgLead, CmdLine, CursorPos) abort
-	return join(["all", "input", "output"], "\n")
+	return join(["all", "input", "output", "error"], "\n")
 endfun
 
 fun! s:EvalCode(start, stop) abort

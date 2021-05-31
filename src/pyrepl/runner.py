@@ -17,8 +17,8 @@ def run_code(code, timeout, offset=0):
 	if timeout <= 0:
 		timeout = None
 
-	with IOBuffer() as (fdin, fdout):
-		interpreter = Interpreter(fdin, fdout)
+	with IOBuffer() as fds:
+		interpreter = Interpreter(*fds)
 		thread = Thread(target=interpreter.eval, args=(code,))
 		thread.daemon = True
 		thread.start()
