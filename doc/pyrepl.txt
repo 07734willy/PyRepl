@@ -141,11 +141,11 @@ PyRepl is licensed under the MIT License.
 5. Bugs                                                           *PyReplBugs*
 
 Please report bugs on the issue tracker:
-https://github.com/07734willy/Vim-PyRepl/issues
+https://github.com/07734willy/PyRepl/issues
 
 ==============================================================================
 6. Contributing                                           *PyReplContributing*
 
 Thing you can make this plugin better? Great!
-Submit a pull request to: https://github.com/07734willy/Vim-PyRepl
+Submit a pull request to: https://github.com/07734willy/PyRepl
 

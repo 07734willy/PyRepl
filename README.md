@@ -1,5 +1,5 @@
-# Vim-PyRepl 
-![example workflow](https://github.com/07734willy/Vim-PyRepl/actions/workflows/python-package.yml/badge.svg)
+# PyRepl 
+![example workflow](https://github.com/07734willy/PyRepl/actions/workflows/python-package.yml/badge.svg)
 
 A vim plugin for executing python code within the buffer, displaying the results. It serves as a middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
@@ -29,7 +29,7 @@ Once you've installed Vim-Plug, drop the following into your vimrc, reopen vim, 
 
 ```vim
 call plug#begin('~/.vim/plugged')
-Plug '07734willy/Vim-PyRepl'
+Plug '07734willy/PyRepl'
 call plug#end()
 filetype plugin on
 ```
@@ -48,7 +48,7 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-Plugin '07734willy/Vim-PyRepl'
+Plugin '07734willy/PyRepl'
 
 call vundle#end()
 filetype plugin on
@@ -108,6 +108,6 @@ highlight PyReplError   ctermfg=darkyellow
 
 # Links
 
-Github: https://github.com/07734willy/Vim-PyRepl
+Github: https://github.com/07734willy/PyRepl
   
 Vim.org: 
