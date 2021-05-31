@@ -4,7 +4,7 @@ from contextlib import suppress
 import sys
 
 from .fdio import read_fd, write_fd, append_fd, clear_fd
-from .parser import get_segments
+from .segments import get_segments
 
 def strip_newline(text):
 	if text.endswith("\n"):
