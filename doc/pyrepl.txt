@@ -35,7 +35,8 @@ There are only two commands in PyRepl, |PyReplEval| and |PyReplClear|.
 |PyReplEval| evaluates the current contents of the buffer in a python 
 interpreter, inlining the output as if in a REPL.
 
-|PyReplClear| clears the output from prior evaluations.
+|PyReplClear| clears the data from prior evaluations. Takes an optional
+argument from 'all', 'output', 'input', 'error', defaulting to 'output'.
 
 Both commands support address ranges. 
 
@@ -127,6 +128,7 @@ the default assignments: >
 	highlight PyReplIn      ctermfg=green
 	highlight PyReplOut     ctermfg=darkgrey
 	highlight PyReplInfo    ctermfg=yellow
+	highlight PyReplError   ctermfg=darkyellow
 
 You may also choose to override the background color with `ctermbg`.
 

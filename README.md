@@ -91,7 +91,7 @@ nnoremap <buffer> <silent> <localleader>eu :0,PyReplEval<CR>
 " Mnemonic: "Clear"
 nnoremap <buffer> <silent> <localleader>c :PyReplStrip output<CR>
 
-" Valid arguments to PyReplStrip are `all`, `output`, `input` (default: `output`)
+" Valid arguments to PyReplStrip are `all`, `output`, `input`, `error` (default: `output`)
 ```
 
 **Aesthetics**
@@ -103,6 +103,7 @@ highlight PyReplComment ctermfg=grey
 highlight PyReplIn      ctermfg=green
 highlight PyReplOut     ctermfg=darkgrey
 highlight PyReplInfo    ctermfg=yellow
+highlight PyReplError   ctermfg=darkyellow
 ```
 
 # Links
