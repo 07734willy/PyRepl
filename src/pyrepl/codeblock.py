@@ -1,11 +1,12 @@
-from itertools import cycle, zip_longest
-import sys
+from itertools import zip_longest
 import re
 
 from .console import DryRunConsole, is_functional, is_empty, is_influential
 
+
 def profile(func):
 	return func
+
 
 class Parser:
 	def __init__(self):
@@ -20,7 +21,7 @@ class Parser:
 		if console_swap:
 			self.core_console = console_swap
 		return bool(self.core_console.buffer)
-		
+
 	@profile
 	def add_lines(self, console_swap, *, split):
 		if split:
@@ -30,7 +31,7 @@ class Parser:
 
 		if self.core_console.error:
 			self.consume_error_lines()
-		
+
 		if flush:
 			self.flush_lines()
 
@@ -42,7 +43,7 @@ class Parser:
 
 		self.core_console.reset()
 		self.interpreter_queue = []
-	
+
 	@profile
 	def new_console(self):
 		console = self.core_console.clone()
@@ -55,7 +56,7 @@ class Parser:
 			self.core_console.reset()
 
 			self.interpreter_line = line
-		
+
 			self.core_console.push(line)
 			if is_functional(line) and not self.core_console.error:
 				self.lines.append(line)
@@ -77,9 +78,9 @@ class Parser:
 
 		if self._parse_error_nospace_nonempty_line(line, console_space, console_nospace):
 			return True
-		
-		#if self._parse_error_space_nonempty_line(line, console_space):
-		#	return True
+
+		# if self._parse_error_space_nonempty_line(line, console_space):
+		# 	return True
 
 		return False
 
@@ -102,10 +103,8 @@ class Parser:
 
 	@profile
 	def _parse_error_nospace_nonempty_line(self, line, console_space, console_nospace):
-		#if isinstance(console_space.error, IndentationError):
 		self.add_lines(console_nospace, split=False)
 		return True
-		#return False
 
 	"""
 	@profile
@@ -113,12 +112,12 @@ class Parser:
 		self.add_lines(console, split=True)
 		return True
 	"""
-	
+
 	@profile
 	def _parse_empty_line(self, line):
 		if not is_empty(line):
 			return False
-		
+
 		console = self.new_console()
 		if self._parse_pending_space_line(line, console):
 			return True
@@ -126,7 +125,7 @@ class Parser:
 		if self._parse_nonpending_space_line(line):
 			return True
 
-		return False 
+		return False
 
 	@profile
 	def _parse_pending_space_line(self, line, console):
@@ -138,13 +137,13 @@ class Parser:
 
 	@profile
 	def _parse_nonpending_space_line(self, line):
-		self.queue_lines() # no split
+		self.queue_lines()  # no split
 		return True
 
 	@profile
 	def _parse_lines(self, line):
 		self.interpreter_line = line
-	
+
 		if is_empty(line):
 			return self._parse_empty_line(line)
 		else:
@@ -163,6 +162,7 @@ class Parser:
 		skewed_blocks = skew_block_padding(self.code_blocks)
 		return skewed_blocks
 
+
 def merge_noninfluencial_blocks(blocks):
 	output = blocks[:1]
 
@@ -177,7 +177,7 @@ def merge_noninfluencial_blocks(blocks):
 def skew_block_padding(raw_blocks):
 	if not raw_blocks:
 		return raw_blocks
-	
+
 	blocks = [b + '\n' for b in raw_blocks[:-1]] + raw_blocks[-1:]
 	blocks = merge_noninfluencial_blocks(blocks)
 
@@ -189,19 +189,21 @@ def skew_block_padding(raw_blocks):
 	assert "\n".join(raw_blocks) == "".join(new_blocks)
 	return new_blocks
 
+
 def get_block_prefix_padding(block):
 	lines = re.findall(r".+\n?|.*\n", block)
-	
+
 	padding = ""
 	for line in lines:
 		new_padding = padding + line
 		if is_influential(new_padding):
 			break
 		padding = new_padding
-	
+
 	body = block[len(padding):]
 	assert padding + body == block
 	return padding, body
+
 
 def get_block_postfix_padding(block):
 	lines = re.findall(r".+\n?|.*\n", block)[::-1]
@@ -212,10 +214,11 @@ def get_block_postfix_padding(block):
 		if is_influential(new_padding):
 			break
 		padding = new_padding
-	
-	body = block[:len(block)-len(padding)]
+
+	body = block[:len(block) - len(padding)]
 	assert body + padding == block
 	return body, padding
+
 
 @profile
 def get_code_blocks(code):
@@ -223,4 +226,3 @@ def get_code_blocks(code):
 	blocks = parser.parse(code)
 	assert "".join(blocks) == code
 	return blocks
-	

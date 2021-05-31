@@ -6,10 +6,12 @@ import sys
 from .fdio import read_fd, write_fd, append_fd, clear_fd
 from .segments import get_segments
 
+
 def strip_newline(text):
 	if text.endswith("\n"):
 		return text[:-1]
 	return text
+
 
 class Interpreter:
 	def __init__(self, fdin, fdout, fderr):
@@ -34,7 +36,7 @@ class Interpreter:
 
 			if not data.endswith("\n"):
 				lineno = self.lineno + offset
-				self.lines[lineno] = f"# info: missing trailing newline"
+				self.lines[lineno] = "# info: missing trailing newline"
 				self.lineno += 1
 
 		put_data(output, "out")
@@ -65,7 +67,7 @@ class Interpreter:
 		segments = get_segments(code)
 		for segment in segments:
 			data_input = segment.parse_input()
-			
+
 			clear_fd(self.fdin)
 			write_fd(self.fdin, data_input)
 
@@ -84,13 +86,13 @@ class Interpreter:
 				if result is not None:
 					append_fd(self.fdout, repr(result) + "\n")
 				return
-			
+
 			exec(code, self.global_ns)
-		except EOFError as e:
+		except EOFError:
 			self.prompt_input(offset)
 			append_fd(self.fdout, "\n")
 			self.write_exc()
-		except Exception as e:
+		except Exception:
 			self.write_exc()
 
 	def write_exc(self):
@@ -101,4 +103,3 @@ class Interpreter:
 	@property
 	def output(self):
 		return list(self.lines.items())
-

@@ -1,12 +1,13 @@
 from code import InteractiveConsole
-from codeop import CommandCompiler
 from contextlib import suppress
 from itertools import chain
 import ast
 import sys
 
+
 def profile(func):
 	return func
+
 
 class Compile:
 	def __init__(self, compiler):
@@ -15,15 +16,16 @@ class Compile:
 	def __call__(self, source, filename, symbol):
 		return compile(source, filename, symbol, self.flags, True)
 
+
 class DryRunConsole(InteractiveConsole):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 
-		self.compile.compiler = Compile(self.compile.compiler) 
+		self.compile.compiler = Compile(self.compile.compiler)
 
 		self.error = None
 		self.codeobj = None
-	
+
 	@profile
 	def runsource(self, source, filename="<input>", symbol="single"):
 		self.codeobj = None
@@ -53,8 +55,8 @@ class DryRunConsole(InteractiveConsole):
 			return
 
 		last_line = self.buffer[-1]
-		last_line_influencial = is_influential(last_line) 
-		
+		last_line_influencial = is_influential(last_line)
+
 		if len(self.buffer) >= 2:
 			penultimate_line_influential = is_influential(self.buffer[-2])
 			if not last_line_influencial and not penultimate_line_influential:
@@ -71,7 +73,7 @@ class DryRunConsole(InteractiveConsole):
 		pending = console.push("", optimize=False)
 		if pending or console.error:
 			return
-		
+
 		"""
 		print("Optimized buffer from:", file=sys.stderr)
 		print("-" * 40, file=sys.stderr)
@@ -82,7 +84,7 @@ class DryRunConsole(InteractiveConsole):
 		deletion_ranges = list(get_deletion_ranges(console.codeobj))
 		for begin_lineno, end_lineno in deletion_ranges[::-1]:
 			del self.buffer[begin_lineno:end_lineno]
-	
+
 		"""
 		print("To new buffer:", file=sys.stderr)
 		print("-" * 40, file=sys.stderr)
@@ -98,6 +100,7 @@ class DryRunConsole(InteractiveConsole):
 		self.error = None
 		self.resetbuffer()
 
+
 @profile
 def get_deletion_ranges(root):
 	if not hasattr(root, "body"):
@@ -107,8 +110,8 @@ def get_deletion_ranges(root):
 	if not children:
 		return
 
-	*rest_nodes, last_node = children 
-	
+	*rest_nodes, last_node = children
+
 	with suppress(ValueError):
 		begin_lineno = min(chain.from_iterable(ast_get_begin_linenos(node) for node in rest_nodes))
 		end_lineno   = max(chain.from_iterable(ast_get_end_linenos(node)   for node in rest_nodes))
@@ -119,26 +122,30 @@ def get_deletion_ranges(root):
 
 @profile
 def ast_get_begin_linenos(root):
-	return [node.lineno-1 for node in ast.walk(root) if hasattr(node, 'lineno')]
+	return [node.lineno - 1 for node in ast.walk(root) if hasattr(node, 'lineno')]
+
 
 @profile
 def ast_get_end_linenos(root):
 	return [node.end_lineno for node in ast.walk(root) if hasattr(node, 'end_lineno')]
-	
+
 
 def is_functional(raw_line):
 	line = f"{raw_line}\n "
 	return is_influential(line)
 
+
 def is_influential(line):
 	if is_empty(line):
 		return False
-	try:
+
+	with suppress(Exception):
 		tree = ast.parse(line)
 		nodes = ast.iter_child_nodes(tree)
 		return bool(list(nodes))
-	except:
-		return True
+
+	return True
+
 
 def is_empty(line):
 	return not line.strip()

@@ -6,12 +6,14 @@ import pytest
 
 from pyrepl import run_code
 
+
 def inject_lines(source, lines):
 	source_lines = source.split("\n")
 	for offset, text in lines:
 		for lineno, line in enumerate(text.split("\n"), offset):
 			source_lines.insert(lineno, line)
 	return "\n".join(source_lines)
+
 
 def get_test_name(basepath, dirpath, filename):
 	assert filename.endswith(".py")
@@ -21,6 +23,7 @@ def get_test_name(basepath, dirpath, filename):
 
 	relpath = os.path.relpath(dirpath, basepath)
 	return relpath.replace(os.path.sep, "_")
+
 
 def read_file(path, kind):
 	data_path = os.path.join(path, f"{kind}.py")
@@ -35,6 +38,7 @@ def read_file(path, kind):
 
 	with open(data_path, "r") as f:
 		return f.read()
+
 
 def load_parameterized(func):
 	dirpath = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +59,7 @@ def load_parameterized(func):
 			test_cases.append((test_name, input_data, output_data))
 
 	return pytest.mark.parametrize('test_name,source,expected', test_cases)(func)
+
 
 @load_parameterized
 def test_data(test_name, source, expected):
