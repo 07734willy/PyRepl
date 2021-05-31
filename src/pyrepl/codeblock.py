@@ -7,9 +7,8 @@ import sys
 import ast
 import re
 
-if 'profile' not in globals():
-	def profile(func):
-		return func
+def profile(func):
+	return func
 
 class Compile:
 	def __init__(self, compiler):
@@ -40,11 +39,6 @@ class DryRunConsole(InteractiveConsole):
 
 	@profile
 	def push(self, line, optimize=True):
-		if self.buffer:
-			combined_lines = line + "\n" + self.buffer[-1]
-			if not is_influential(combined_lines):
-				return True
-
 		retval = super().push(line)
 		if optimize:
 			self.optimize_buffer()
@@ -59,6 +53,18 @@ class DryRunConsole(InteractiveConsole):
 	@profile
 	def optimize_buffer(self):
 		if not self.buffer:
+			return
+
+		last_line = self.buffer[-1]
+		last_line_influencial = is_influential(last_line) 
+		
+		if len(self.buffer) >= 2:
+			penultimate_line_influential = is_influential(self.buffer[-2])
+			if not last_line_influencial and not penultimate_line_influential:
+				del self.buffer[-1]
+				return
+
+		if not last_line_influencial:
 			return
 
 		if len(self.buffer) < 8:
