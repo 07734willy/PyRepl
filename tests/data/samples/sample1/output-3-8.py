@@ -82,8 +82,8 @@ else:
 	print(x)
 	x
 # out:   File "<string>", line 79
-# out:     	y = 
-# out:     	    ^
+# out:     y =
+# out:        ^
 # out: SyntaxError: invalid syntax
 
 x
