@@ -5,10 +5,6 @@ import ast
 import sys
 
 
-def profile(func):
-	return func
-
-
 class Compile:
 	def __init__(self, compiler):
 		self.flags = compiler.flags | ast.PyCF_ONLY_AST
@@ -26,7 +22,6 @@ class DryRunConsole(InteractiveConsole):
 		self.error = None
 		self.codeobj = None
 
-	@profile
 	def runsource(self, source, filename="<input>", symbol="single"):
 		self.codeobj = None
 		try:
@@ -36,20 +31,17 @@ class DryRunConsole(InteractiveConsole):
 			self.showsyntaxerror(filename)
 			return False
 
-	@profile
 	def push(self, line, optimize=True):
 		retval = super().push(line)
 		if optimize:
 			self.optimize_buffer()
 		return retval
 
-	@profile
 	def clone(self):
 		console = DryRunConsole()
 		console.buffer = list(self.buffer)
 		return console
 
-	@profile
 	def optimize_buffer(self):
 		if not self.buffer:
 			return
@@ -74,23 +66,9 @@ class DryRunConsole(InteractiveConsole):
 		if pending or console.error:
 			return
 
-		"""
-		print("Optimized buffer from:", file=sys.stderr)
-		print("-" * 40, file=sys.stderr)
-		print("\n".join(self.buffer), file=sys.stderr)
-		print("-" * 40, file=sys.stderr)
-		"""
-
 		deletion_ranges = list(get_deletion_ranges(console.codeobj))
 		for begin_lineno, end_lineno in deletion_ranges[::-1]:
 			del self.buffer[begin_lineno:end_lineno]
-
-		"""
-		print("To new buffer:", file=sys.stderr)
-		print("-" * 40, file=sys.stderr)
-		print("\n".join(self.buffer), file=sys.stderr)
-		print("-" * 40, file=sys.stderr)
-		"""
 
 	def showsyntaxerror(self, *args, **kwargs):
 		_, error_val, _ = sys.exc_info()
@@ -101,7 +79,6 @@ class DryRunConsole(InteractiveConsole):
 		self.resetbuffer()
 
 
-@profile
 def get_deletion_ranges(root):
 	if not hasattr(root, "body"):
 		return
@@ -120,12 +97,10 @@ def get_deletion_ranges(root):
 	yield from get_deletion_ranges(last_node)
 
 
-@profile
 def ast_get_begin_linenos(root):
 	return [node.lineno - 1 for node in ast.walk(root) if hasattr(node, 'lineno')]
 
 
-@profile
 def ast_get_end_linenos(root):
 	return [node.end_lineno for node in ast.walk(root) if hasattr(node, 'end_lineno')]
 

@@ -4,17 +4,12 @@ import re
 from .console import DryRunConsole, is_functional, is_empty, is_influential
 
 
-def profile(func):
-	return func
-
-
 class Parser:
 	def __init__(self):
 		self.interpreter_queue = []
 		self.code_blocks = []
 		self.core_console = DryRunConsole()
 
-	@profile
 	def queue_lines(self, console_swap=None):
 		self.interpreter_queue.append(self.interpreter_line)
 
@@ -22,7 +17,6 @@ class Parser:
 			self.core_console = console_swap
 		return bool(self.core_console.buffer)
 
-	@profile
 	def add_lines(self, console_swap, *, split):
 		if split:
 			self.flush_lines()
@@ -35,7 +29,6 @@ class Parser:
 		if flush:
 			self.flush_lines()
 
-	@profile
 	def flush_lines(self):
 		if self.interpreter_queue:
 			block = "\n".join(self.interpreter_queue)
@@ -44,12 +37,10 @@ class Parser:
 		self.core_console.reset()
 		self.interpreter_queue = []
 
-	@profile
 	def new_console(self):
 		console = self.core_console.clone()
 		return console
 
-	@profile
 	def consume_error_lines(self):
 		while self.lines:
 			line = self.lines.pop()
@@ -66,7 +57,6 @@ class Parser:
 		self.core_console.reset()
 		self.flush_lines()
 
-	@profile
 	def _parse_nonempty_line(self, line):
 		console_nospace = self.new_console()
 		if self._parse_normal_nonempty_line(line, console_nospace):
@@ -84,7 +74,6 @@ class Parser:
 
 		return False
 
-	@profile
 	def _parse_normal_nonempty_line(self, line, console):
 		console.push(line)
 		if not console.error:
@@ -92,7 +81,6 @@ class Parser:
 			return True
 		return False
 
-	@profile
 	def _parse_faked_empty_line(self, line, console):
 		console.push("")
 		console.push(line)
@@ -101,19 +89,16 @@ class Parser:
 			return True
 		return False
 
-	@profile
 	def _parse_error_nospace_nonempty_line(self, line, console_space, console_nospace):
 		self.add_lines(console_nospace, split=False)
 		return True
 
 	"""
-	@profile
 	def _parse_error_space_nonempty_line(self, line, console):
 		self.add_lines(console, split=True)
 		return True
 	"""
 
-	@profile
 	def _parse_empty_line(self, line):
 		if not is_empty(line):
 			return False
@@ -127,7 +112,6 @@ class Parser:
 
 		return False
 
-	@profile
 	def _parse_pending_space_line(self, line, console):
 		pending_with_space = console.push(line)
 		if pending_with_space:
@@ -135,12 +119,10 @@ class Parser:
 			return True
 		return False
 
-	@profile
 	def _parse_nonpending_space_line(self, line):
 		self.queue_lines()  # no split
 		return True
 
-	@profile
 	def _parse_lines(self, line):
 		self.interpreter_line = line
 
@@ -149,7 +131,6 @@ class Parser:
 		else:
 			return self._parse_nonempty_line(line)
 
-	@profile
 	def parse(self, code):
 		self.lines = code.split("\n")[::-1]
 
@@ -220,7 +201,6 @@ def get_block_postfix_padding(block):
 	return body, padding
 
 
-@profile
 def get_code_blocks(code):
 	parser = Parser()
 	blocks = parser.parse(code)

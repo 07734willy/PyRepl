@@ -42,7 +42,7 @@ class StdinIO(StringIO):
 
 
 class IOBuffer:
-	debug = True
+	debug = False
 
 	def __init__(self):
 		self.stdin  = sys.stdin
