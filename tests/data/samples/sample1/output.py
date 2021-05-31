@@ -81,10 +81,10 @@ if x:
 else:
 	print(x)
 	x
-# out:   File "<string>", line 79
-# out:     	y = 
-# out:     	    ^
-# out: SyntaxError: invalid syntax
+# error:   File "<string>", line 79
+# error:     	y = 
+# error:     	    ^
+# error: SyntaxError: invalid syntax
 
 x
 # out: 2

@@ -25,9 +25,9 @@ print(lines)
 input("This should populate, with an error initially")
 # in: 
 # out: This should populate, with an error initially
-# out: Traceback (most recent call last):
-# out:   File "<string>", line 25, in <module>
-# out: EOFError: EOF when reading a line
+# error: Traceback (most recent call last):
+# error:   File "<string>", line 25, in <module>
+# error: EOFError: EOF when reading a line
 
 result = input("We're going to attempt to fake the input line in a comment")
   # in: wrong
