@@ -1,5 +1,8 @@
 # PyRepl 
 ![example workflow](https://github.com/07734willy/PyRepl/actions/workflows/python-package.yml/badge.svg)
+[![GitHub release](https://img.shields.io/github/release/07734willy/PyRepl.svg)](https://github.com/07734willy/PyRepl/releases/)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+
 
 A vim plugin for executing python code within the buffer, displaying the results. It serves as a middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
@@ -10,7 +13,7 @@ Here are a couple of example screenshots, just to give a feel for how it functio
 <details>
   <summary>Screenshots</summary>
   
-<img src="screenshots/image0.png" width="425"/> <img src="screenshots/image1.png" width="425"/>
+<img src="screenshots/image0.png" width="400"/> <img src="screenshots/image1.png" width="400"/>
 </details>
 
 ### Requirements
