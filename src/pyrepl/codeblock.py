@@ -1,208 +1,137 @@
-from itertools import zip_longest
+import ast
 import re
 
-from .console import DryRunConsole, is_functional, is_empty, is_influential
+from .parser import Parser, compare_exception_types, is_functional, is_empty
+
+MULTILINE_EXCEPTION = Parser().get_parse_single_error("0\n0")
 
 
-class Parser:
-	def __init__(self):
-		self.interpreter_queue = []
-		self.code_blocks = []
-		self.core_console = DryRunConsole()
+class Block:
+	def __init__(self, code):
+		code_lines = split_lines(code)
 
-	def queue_lines(self, console_swap=None):
-		self.interpreter_queue.append(self.interpreter_line)
+		top_pad_lines, code_lines    = self.split_padding(code_lines)
+		bottom_pad_lines, code_lines = self.split_padding(code_lines[::-1])
 
-		if console_swap:
-			self.core_console = console_swap
-		return bool(self.core_console.buffer)
+		self.top_pad    = "".join(top_pad_lines)
+		self.bottom_pad = "".join(bottom_pad_lines[::-1])
+		self.code       = "".join(code_lines[::-1])
 
-	def add_lines(self, console_swap, *, split):
-		if split:
-			self.flush_lines()
+	def split_padding(self, code_lines):
+		for idx, line in enumerate(code_lines):
+			if is_functional(line):
+				padding_lines     = code_lines[:idx]
+				code_subset_lines = code_lines[idx:]
 
-		flush = not self.queue_lines(console_swap)
+				return padding_lines, code_subset_lines
+		return code_lines, ""
 
-		if self.core_console.error:
-			self.consume_error_lines()
+	def shift_padding(self, other):
+		other.bottom_pad += self.top_pad
+		self.top_pad = ""
 
-		if flush:
-			self.flush_lines()
+	@property
+	def entirety(self):
+		return self.top_pad + self.code + self.bottom_pad
 
-	def flush_lines(self):
-		if self.interpreter_queue:
-			block = "\n".join(self.interpreter_queue)
-			self.code_blocks.append(block)
+	@property
+	def size(self):
+		return len(self.entirety)
 
-		self.core_console.reset()
-		self.interpreter_queue = []
+	@property
+	def padding(self):
+		return self.bottom_pad
 
-	def new_console(self):
-		console = self.core_console.clone()
-		return console
+	@property
+	def body(self):
+		return self.top_pad + self.code
 
-	def consume_error_lines(self):
-		while self.lines:
-			line = self.lines.pop()
-			self.core_console.reset()
-
-			self.interpreter_line = line
-
-			self.core_console.push(line)
-			if is_functional(line) and not self.core_console.error:
-				self.lines.append(line)
-				break
-			else:
-				self.queue_lines()
-		self.core_console.reset()
-		self.flush_lines()
-
-	def _parse_nonempty_line(self, line):
-		console_nospace = self.new_console()
-		if self._parse_normal_nonempty_line(line, console_nospace):
-			return True
-
-		console_space = self.new_console()
-		if self._parse_faked_empty_line(line, console_space):
-			return True
-
-		if self._parse_error_nospace_nonempty_line(line, console_space, console_nospace):
-			return True
-
-		# if self._parse_error_space_nonempty_line(line, console_space):
-		# 	return True
-
-		return False
-
-	def _parse_normal_nonempty_line(self, line, console):
-		console.push(line)
-		if not console.error:
-			self.add_lines(console, split=False)
-			return True
-		return False
-
-	def _parse_faked_empty_line(self, line, console):
-		console.push("")
-		console.push(line)
-		if not console.error:
-			self.add_lines(console, split=True)
-			return True
-		return False
-
-	def _parse_error_nospace_nonempty_line(self, line, console_space, console_nospace):
-		self.add_lines(console_nospace, split=False)
-		return True
-
-	"""
-	def _parse_error_space_nonempty_line(self, line, console):
-		self.add_lines(console, split=True)
-		return True
-	"""
-
-	def _parse_empty_line(self, line):
-		if not is_empty(line):
-			return False
-
-		console = self.new_console()
-		if self._parse_pending_space_line(line, console):
-			return True
-
-		if self._parse_nonpending_space_line(line):
-			return True
-
-		return False
-
-	def _parse_pending_space_line(self, line, console):
-		pending_with_space = console.push(line)
-		if pending_with_space:
-			self.add_lines(console, split=False)
-			return True
-		return False
-
-	def _parse_nonpending_space_line(self, line):
-		self.queue_lines()  # no split
-		return True
-
-	def _parse_lines(self, line):
-		self.interpreter_line = line
-
-		if is_empty(line):
-			return self._parse_empty_line(line)
-		else:
-			return self._parse_nonempty_line(line)
-
-	def parse(self, code):
-		self.lines = code.split("\n")[::-1]
-
-		while self.lines:
-			line = self.lines.pop()
-			self._parse_lines(line)
-
-		self.flush_lines()
-
-		skewed_blocks = skew_block_padding(self.code_blocks)
-		return skewed_blocks
+	def __repr__(self):
+		return f"<Block: ({repr(self.top_pad)}, {repr(self.code)}, {repr(self.bottom_pad)})>"
 
 
-def merge_noninfluencial_blocks(blocks):
-	output = blocks[:1]
+def get_true_error_lineno(code, error):
+	error_lineno = error.lineno - 1
+	code_lines = code.split("\n", error_lineno + 1)
 
-	for block in blocks[1:]:
-		if not is_influential(block):
-			output.append(output.pop() + block)
-		else:
-			output.append(block)
-	return output
+	offset = error.offset
+	error_line = code_lines[error_lineno]
 
-
-def skew_block_padding(raw_blocks):
-	if not raw_blocks:
-		return raw_blocks
-
-	blocks = [b + '\n' for b in raw_blocks[:-1]] + raw_blocks[-1:]
-	blocks = merge_noninfluencial_blocks(blocks)
-
-	paddings, bodies = zip(*[get_block_prefix_padding(block) for block in blocks])
-	new_pairs = zip_longest(bodies, paddings[1:], fillvalue="")
-
-	new_blocks = ["".join(pair) for pair in new_pairs]
-	new_blocks[0] = paddings[0] + new_blocks[0]
-	assert "\n".join(raw_blocks) == "".join(new_blocks)
-	return new_blocks
+	while offset > len(error_line):
+		offset -= len(error_line) + 1
+		error_lineno -= 1
+		error_line = code_lines[error_lineno]
+	return error_lineno
 
 
-def get_block_prefix_padding(block):
-	lines = re.findall(r".+\n?|.*\n", block)
-
-	padding = ""
-	for line in lines:
-		new_padding = padding + line
-		if is_influential(new_padding):
-			break
-		padding = new_padding
-
-	body = block[len(padding):]
-	assert padding + body == block
-	return padding, body
+def take_until_line(code, lineno):
+	first_half_lines = split_lines(code)[:lineno + 1]
+	first_half = "".join(first_half_lines)
+	return first_half
 
 
-def get_block_postfix_padding(block):
-	lines = re.findall(r".+\n?|.*\n", block)[::-1]
+def split_lines(code):
+	lines = re.findall(r".+\n?|.*\n", code)
+	return lines
 
-	padding = ""
-	for line in lines:
-		new_padding = line + padding
-		if is_influential(new_padding):
-			break
-		padding = new_padding
 
-	body = block[:len(block) - len(padding)]
-	assert body + padding == block
-	return body, padding
+def get_next_error_block_content(parser, code, error):
+	code_lines = split_lines(code)
+	error_lineno = error.lineno - 1
+
+	for lineno, line in enumerate(code_lines[error_lineno + 1:], error_lineno + 1):
+		if parser.is_valid_segment_start(line):
+			return "".join(code_lines[:lineno])
+	return code
+
+
+def get_last_lineno(node):
+	return max(e.end_lineno for e in ast.walk(node) if hasattr(e, "end_lineno"))
+
+
+def get_block_subset(parser, code):
+	code_lines = split_lines(code)
+	ast_node = parser.parse_code(code).body[0]
+	end_lineno = get_last_lineno(ast_node) - 1
+
+	subset_lines = code_lines[:end_lineno + 1]
+	return "".join(subset_lines)
+
+
+def get_next_block_content(parser, code):
+	if is_empty(code):
+		return code
+
+	error = parser.get_parse_single_error(code)
+	if error is None:
+		return get_block_subset(parser, code)
+
+	if parser.compare_single_and_exec(code):
+		return get_next_error_block_content(parser, code, error)
+
+	if compare_exception_types(error, MULTILINE_EXCEPTION):
+		return take_until_line(code, error.lineno - 1)
+
+	error_lineno = get_true_error_lineno(code, error)
+	return take_until_line(code, error_lineno - 1)
 
 
 def get_code_blocks(code):
 	parser = Parser()
-	blocks = parser.parse(code)
-	assert "".join(blocks) == code
+	blocks = []
+
+	while code:
+		content = get_next_block_content(parser, code)
+		parser.update_offset(content)
+		block = Block(content)
+
+		code = code[block.size:]
+		blocks.append(block)
+
+	prev_block, *rest = blocks
+
+	for curr_block in rest:
+		curr_block.shift_padding(prev_block)
+		prev_block = curr_block
+
 	return blocks
