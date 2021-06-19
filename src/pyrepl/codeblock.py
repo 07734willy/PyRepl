@@ -1,6 +1,8 @@
 import ast
 import re
 
+import sys
+
 from .parser import Parser, compare_exception_types, is_functional, is_empty
 
 MULTILINE_EXCEPTION = Parser().get_parse_single_error("0\n0")
@@ -54,7 +56,10 @@ def get_true_error_lineno(code, error):
 	error_lineno = error.lineno - 1
 	code_lines = code.split("\n", error_lineno + 1)
 
-	offset = error.offset
+	if (3, 8) <= sys.version_info < (3, 9):
+		offset = len(error.text) - 1
+	else:
+		offset = error.offset
 	error_line = code_lines[error_lineno]
 
 	while offset > len(error_line):
@@ -91,8 +96,14 @@ def get_last_lineno(node):
 
 def get_block_subset(parser, code):
 	code_lines = split_lines(code)
-	ast_node = parser.parse_code(code).body[0]
-	end_lineno = get_last_lineno(ast_node) - 1
+	module_body = parser.parse_code(code).body
+	ast_node = module_body[0]
+
+	try:
+		end_lineno = get_last_lineno(ast_node) - 1
+	except ValueError:
+		assert len(module_body) == 1
+		return code
 
 	subset_lines = code_lines[:end_lineno + 1]
 	return "".join(subset_lines)
