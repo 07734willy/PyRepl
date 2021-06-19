@@ -2,7 +2,8 @@
 
 When contributing to this repository, please create an issue on Github before making any changes. There are a lot of things that *could* be added to PyRepl, but *should not*, because of the scope of the project.
 
-### Vision
+## Vision
+
 
 PyRepl is meant to be a lightweight Vim plugin to allow the user to see the effects of their Python code, right inside the buffer. It is meant to have aspects of both the Python REPL and of a full-blown Python Notebook like IPython or Jupyter, all within the editor. Such aspects include:
 
@@ -17,7 +18,7 @@ Another example of what could be considered beyond this project's scope would be
 
 We must keep these sorts of concepts in mind when considering new features and changes for PyRepl.
 
-### Issues
+## Issues
 
 Please create issues for any and all changes to be made. Whether that be bug reports, feature requests, code optimizations, etc. 
 
@@ -29,7 +30,7 @@ If submitting a bug report, please include:
  	- If you're not sure which of the above you're using, you can try using PyRepl in a new file containing only the text: `import sys; print(sys.version)`
  - The version of PyRepl you're experiencing the issue on (it may already be solved in a newer version, so check that too!)
 
-### Environment
+## Environment
 
 To setup your development environment, you need to first download and install the currently supported major versions of python [from python.org](https://www.python.org/downloads/).
 
@@ -40,7 +41,7 @@ pip install -r requirements.txt
 ```
 Once that is done, you will have everything you need. 
 
-#### Testing
+### Testing
 
 You can run the tests with the command `tox`. 
 
@@ -52,11 +53,11 @@ pip install --editable .
 
 You'll then be able to run the tests with `pytest` as normal.
 
-#### Linting
+### Linting
 
 You can run the linter with the command `flake8`.
 
-### Pull Requests
+## Pull Requests
 
 If you have found an issue that you wish to tackle, you'll need to create a pull request to merge your contributions. Some notes when doing so:
 
