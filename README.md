@@ -75,7 +75,7 @@ let g:pyrepl_interpreter = "python"
 
 **Mappings**
 
-Note that the default mappings use the \<localleader\> key, which is by default, bound to '\\' (backslash). You can change this with `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
+Note that the default mappings use the \<localleader\> key, which is by default, bound to `\` (backslash). You can change this with the command: `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
 
 ```vim
 " Add this statement if you intend to set the mappings yourself
