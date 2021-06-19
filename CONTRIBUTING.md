@@ -32,7 +32,7 @@ If submitting a bug report, please include:
 
 ## Environment
 
-To setup your development environment, you need to first download and install the currently supported major versions of python [from python.org](https://www.python.org/downloads/).
+To setup your development environment, you need to first download and install the currently supported major versions of python [from python.org](https://www.python.org/downloads/). The supported versions are enumerated in the `tox.ini` file as well as in `.github/workflows/python-package.yml`.
 
 Next, install the requirements via pip:
 
@@ -68,7 +68,7 @@ If you have found an issue that you wish to tackle, you'll need to create a pull
  2. All tests must pass.
  	- Performance tests must pass on Github Actions
  3. The linter (flake8) should exit cleanly
- 4. Increment the version number in line with [Semantic Versioning](https://semver.org/)
+ 4. Increment the version number in `setup.cfg` in line with [Semantic Versioning](https://semver.org/)
  5. If you are fixing a bug, you must add a regression test for said bug
  6. If you are adding a new feature, make sure it falls in line with the project **vision**, particularly if a maintainer has not yet commented on the issue
 	
