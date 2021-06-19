@@ -20,6 +20,8 @@ This plugin requires Python 3.7+ to evaluate your python script. It has been tes
 
 Tested on with both Vim 8.0 and NeoVim 0.4.3, however its very likely that this plugin will work on older versions, since it doesn't do anything too crazy vim-side.
 
+For the plugin itself, there are no other language or package dependencies. PyRepl is meant to be lightweight and portable. For development, packages listed in `requirements.txt` are used for testing and linting the plugin itself, but are not required for regular usage. 
+
 ## Installation
 
 To install the plugin, you'll likely want to use some plugin manager. Below are examples using Vim-Plug and Vundle, but you're free to use whichever plugin manager you prefer.
@@ -73,7 +75,7 @@ let g:pyrepl_interpreter = "python"
 
 **Mappings**
 
-Note that the default mappings use the <localleader> key, which is by default, bound to '\'. You can change this with `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
+Note that the default mappings use the \<localleader\> key, which is by default, bound to '\\' (backslash). You can change this with `let maplocalleader = ...`. You may also choose to remap commands to something else entirely. It is highly recommended that you customize these keybindings.
 
 ```vim
 " Add this statement if you intend to set the mappings yourself

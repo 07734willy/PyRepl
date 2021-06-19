@@ -3,6 +3,7 @@ import pytest
 
 REPEATS = 1000
 
+
 @pytest.mark.timeout(0.1)
 def test_parsing_many_statements():
 	statement = "x = 2"
