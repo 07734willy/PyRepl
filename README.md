@@ -1,25 +1,26 @@
 # PyRepl 
 ![example workflow](https://github.com/07734willy/PyRepl/actions/workflows/python-package.yml/badge.svg)
+[![GitHub release](https://img.shields.io/github/release/07734willy/PyRepl.svg)](https://github.com/07734willy/PyRepl/releases/)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+
 
 A vim plugin for executing python code within the buffer, displaying the results. It serves as a middle-ground between using a full-blown python notebook as with Jupyter or IPython, and merely using the Python REPL. This allows the user to write their code in their normal vim environment, run and see the result inline, and then make any corrections, all without leaving vim. 
 
-### Screenshots
-
-Here are a couple of example screenshots, just to give a feel for how it functions.
+Below are a couple of example screenshots, just to give a feel for how it works.
 
 <details>
   <summary>Screenshots</summary>
   
-<img src="screenshots/image0.png" width="425"/> <img src="screenshots/image1.png" width="425"/>
+<img src="screenshots/image0.png" width="400"/> <img src="screenshots/image1.png" width="400"/>
 </details>
 
-### Requirements
+## Requirements
 
 This plugin requires Python 3.7+ to evaluate your python script. It has been tested to work on Python 3.6.9, however tests are not ran automatically against this version, and thus it may break in the future.
 
 Tested on with both Vim 8.0 and NeoVim 0.4.3, however its very likely that this plugin will work on older versions, since it doesn't do anything too crazy vim-side.
 
-### Installation
+## Installation
 
 To install the plugin, you'll likely want to use some plugin manager. Below are examples using Vim-Plug and Vundle, but you're free to use whichever plugin manager you prefer.
 
@@ -54,7 +55,7 @@ call vundle#end()
 filetype plugin on
 ```
 
-### Customization
+## Customization
 
 There are a handful of variables you can set to tweak the plugin's behavior.
 
@@ -106,7 +107,7 @@ highlight PyReplInfo    ctermfg=yellow
 highlight PyReplError   ctermfg=darkyellow
 ```
 
-# Links
+## Links
 
 Github: https://github.com/07734willy/PyRepl
   
