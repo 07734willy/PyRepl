@@ -1,27 +1,28 @@
+from itertools import islice
 import ast
 import re
 
 import sys
 
-from .parser import Parser, compare_exception_types, is_functional, is_empty
+from .parser import Parser, compare_exception_types, is_empty
 
 MULTILINE_EXCEPTION = Parser().get_parse_single_error("0\n0")
 
 
 class Block:
-	def __init__(self, code):
+	def __init__(self, parser, code):
 		code_lines = split_lines(code)
 
-		top_pad_lines, code_lines    = self.split_padding(code_lines)
-		bottom_pad_lines, code_lines = self.split_padding(code_lines[::-1])
+		top_pad_lines, code_lines    = self.split_padding(parser, code_lines)
+		bottom_pad_lines, code_lines = self.split_padding(parser, code_lines[::-1])
 
 		self.top_pad    = "".join(top_pad_lines)
 		self.bottom_pad = "".join(bottom_pad_lines[::-1])
 		self.code       = "".join(code_lines[::-1])
 
-	def split_padding(self, code_lines):
+	def split_padding(self, parser, code_lines):
 		for idx, line in enumerate(code_lines):
-			if is_functional(line):
+			if parser.is_functional(line):
 				padding_lines     = code_lines[:idx]
 				code_subset_lines = code_lines[idx:]
 
@@ -70,13 +71,14 @@ def get_true_error_lineno(code, error):
 
 
 def take_until_line(code, lineno):
-	first_half_lines = split_lines(code)[:lineno + 1]
+	first_half_lines = split_lines(code, lineno + 1)
 	first_half = "".join(first_half_lines)
 	return first_half
 
 
-def split_lines(code):
-	lines = re.findall(r".+\n?|.*\n", code)
+def split_lines(code, count=None):
+	matches = re.finditer(r".*\n?", code)
+	lines = [m.group(0) for m in islice(matches, count)]
 	return lines
 
 
@@ -134,7 +136,7 @@ def get_code_blocks(code):
 	while code:
 		content = get_next_block_content(parser, code)
 		parser.update_offset(content)
-		block = Block(content)
+		block = Block(parser, content)
 
 		code = code[block.size:]
 		blocks.append(block)

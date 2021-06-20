@@ -55,13 +55,31 @@ class Parser:
 		return compile(code, "<file>", mode, flags=ast.PyCF_ONLY_AST)
 
 	def is_valid_segment_start(self, line):
-		if not is_functional(line):
+		if not self.is_functional(line):
 			return False
 
 		try:
 			self.compiler(line, "<file>", "single")
 		except (OverflowError, SyntaxError, ValueError):
 			return False
+		return True
+
+	def is_functional(self, raw_line):
+		line = f"{raw_line}\n "
+		return self.is_influential(line)
+
+	def is_influential(self, line):
+		if is_empty(line):
+			return False
+
+		if is_comment(line):
+			return False
+
+		with suppress(Exception):
+			tree = self.parse_code(line)
+			nodes = ast.iter_child_nodes(tree)
+			return bool(list(nodes))
+
 		return True
 
 
@@ -73,22 +91,9 @@ def compare_exceptions(e1, e2):
 	return type(e1) == type(e2) and e1.args == e2.args
 
 
-def is_functional(raw_line):
-	line = f"{raw_line}\n "
-	return is_influential(line)
-
-
-def is_influential(line):
-	if is_empty(line):
-		return False
-
-	with suppress(Exception):
-		tree = ast.parse(line)
-		nodes = ast.iter_child_nodes(tree)
-		return bool(list(nodes))
-
-	return True
-
-
 def is_empty(line):
 	return not line.strip()
+
+
+def is_comment(line):
+	return line.strip().startswith("#")
