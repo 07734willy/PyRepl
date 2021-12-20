@@ -37,7 +37,7 @@ class Parser:
 		lineno -= self.line_offset
 		details = (filename, lineno, offset, text)
 
-		error = SyntaxError(msg, details)
+		error = type(self._exec_error)(msg, details)
 		return error
 
 	def compare_single_and_exec(self, code):
