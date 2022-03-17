@@ -6,6 +6,9 @@ import sys
 
 from .parser import Parser, compare_exception_types, is_empty
 
+from logging import getLogger
+logger = getLogger(__name__)
+
 MULTILINE_EXCEPTION = Parser().get_parse_single_error("0\n0")
 
 
@@ -64,6 +67,7 @@ def get_true_error_lineno(code, error):
 	error_line = code_lines[error_lineno]
 
 	while offset > len(error_line):
+		logger.info("looping to fix offset")
 		offset -= len(error_line) + 1
 		error_lineno -= 1
 		error_line = code_lines[error_lineno]
@@ -113,18 +117,23 @@ def get_block_subset(parser, code):
 
 def get_next_block_content(parser, code):
 	if is_empty(code):
+		logger.info("code is actually empty")
 		return code
 
 	error = parser.get_parse_single_error(code)
 	if error is None:
+		logger.info("error is none")
 		return get_block_subset(parser, code)
 
 	if parser.compare_single_and_exec(code):
+		logger.info("compared single + exec to be equal")
 		return get_next_error_block_content(parser, code, error)
 
 	if compare_exception_types(error, MULTILINE_EXCEPTION):
+		logger.info("ran across single-block boundary")
 		return take_until_line(code, error.lineno - 1)
 
+	logger.info("actual error")
 	error_lineno = get_true_error_lineno(code, error)
 	return take_until_line(code, error_lineno - 1)
 

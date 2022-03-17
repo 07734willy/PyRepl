@@ -9,6 +9,14 @@ if !exists("g:pyrepl_timeout")
 	let g:pyrepl_timeout = 1
 endif
 
+if !exists("g:pyrepl_logfile")
+	let g:pyrepl_logfile = ""
+endif
+
+if !exists("g:pyrepl_debug")
+	let g:pyrepl_debug = 0
+endif
+
 if !exists("g:pyrepl_interpreter")
 	if executable("python") && s:IsWindows()  " prefer python > python3 on Win
 		let g:pyrepl_interpreter = "python"
@@ -100,7 +108,15 @@ fun! s:EvalCode(start, stop) abort
 	let l:old_pypath = $PYTHONPATH
 	
 	let l:source = join(getline(a:start, true_stop), "\n")
-	let l:command = g:pyrepl_interpreter . " -m pyrepl " . g:pyrepl_timeout . " " . (a:start - 1)
+	let l:command = g:pyrepl_interpreter . " -m pyrepl -t " . g:pyrepl_timeout . " -o " . (a:start - 1)
+
+	if g:pyrepl_logfile != ""
+		let l:command .= " --log " . g:pyrepl_logfile
+	endif
+
+	if g:pyrepl_debug
+		let l:command .= " --debug"
+	endif
 
 	try
 		call s:AppendPythonPath(expand("%:p:h"))

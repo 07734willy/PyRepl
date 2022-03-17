@@ -3,6 +3,9 @@ from codeop import CommandCompiler
 from functools import lru_cache
 import ast
 
+from logging import getLogger
+logger = getLogger(__name__)
+
 
 class Parser:
 	def __init__(self):
@@ -25,22 +28,28 @@ class Parser:
 		self.line_offset += consumed_code.count("\n")
 
 	def get_parse_exec_error(self, code):
+		logger.info("Parsing exec-error")
 		if not self.exec_error_cached:
+			logger.info("Missed exec-error cache")
 			self._exec_error = self.get_parse_error(code, "exec")
 			self.line_offset = 0
 			self.exec_error_cached = True
 
 		if self._exec_error is None:
+			logger.info("No exec-error")
 			return None
 
-		msg, (filename, lineno, offset, text) = self._exec_error.args
+		# python 3.10.x - extra arguments added to SyntaxError:
+		#  'end_lineno' and 'end_offset'
+		msg, (filename, lineno, offset, text, *extras) = self._exec_error.args
 		lineno -= self.line_offset
-		details = (filename, lineno, offset, text)
+		details = (filename, lineno, offset, text, *extras)
 
 		error = type(self._exec_error)(msg, details)
 		return error
 
 	def compare_single_and_exec(self, code):
+		logger.info("compiling single + exec")
 		error_single = self.get_parse_single_error(code)
 		error_exec = self.get_parse_exec_error(code)
 
@@ -88,7 +97,19 @@ def compare_exception_types(e1, e2):
 
 
 def compare_exceptions(e1, e2):
-	return type(e1) == type(e2) and e1.args == e2.args
+	if type(e1) != type(e2):
+		return False
+
+	if not isinstance(e1, SyntaxError):
+		return e1.args == e2.args
+
+	msg1, (fn1, ln1, off1, txt1, *_) = e1.args
+	msg2, (fn2, ln2, off2, txt2, *_) = e2.args
+
+	args1 = (msg1, fn1, ln1, off1, txt1)
+	args2 = (msg2, fn2, ln2, off2, txt2)
+
+	return args1 == args2
 
 
 def is_empty(line):

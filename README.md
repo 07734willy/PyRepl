@@ -71,6 +71,15 @@ let g:pyrepl_timeout = 1
 " This can be changed to the path of the specific executable you wish to have run your code
 " If you are using virtualenv, you should be fine. This is for others who don't use virtual environments
 let g:pyrepl_interpreter = "python"
+
+" (Debugging) Changes the location of the logfile produced when the interpreter crashes or 
+" things go "bad" in general. Defaults to `logs/debug.log` in the PyRepl project directory
+let g:pyrepl_logfile = "dir/debug.log"
+
+" (Debugging) Enables more verbose logging. By default, PyRepl only logs the Python traceback
+" for actual crashes, and very severe issue (omitting any userdata). Enabling this in turn
+" enables more detailed logging, which may contain data about the source code it processes
+let g:pyrepl_debug = 1
 ```
 
 **Mappings**

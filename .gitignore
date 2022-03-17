@@ -4,6 +4,8 @@ venv36
 venv37/
 venv38/
 
+logs/
+
 ## PYTHON
 
 # Byte-compiled / optimized / DLL files
