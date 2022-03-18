@@ -118,6 +118,29 @@ highlight PyReplInfo    ctermfg=yellow
 highlight PyReplError   ctermfg=darkyellow
 ```
 
+## Bugs
+
+Please report bugs on the issue tracker on github.
+
+When submitting a report, please include:
+  - PyRepl version
+  - Vim flavor ( vim / neovim / spacevim) and version
+  - Platform ( Windows 10 / Ubuntu 20 / etc. )
+  - A (small) reproducable example if possible
+  - The `debug.log` logfile
+
+If you can reproduce the bug on your machine, consider creating a clean
+logfile. Just insert the following at the bottom of your .vimrc temporarily:
+
+```vim
+" This will put the logfile in your current directory
+let g:pyrepl_logfile = "debug.log"
+" This will enable debug mode, allowing for more verbose logging
+let g:pyrepl_debug = 1
+```
+
+See the PyRepl help pages within vim for more details on each variable.
+
 ## Links
 
 Github: https://github.com/07734willy/PyRepl
