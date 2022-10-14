@@ -54,7 +54,7 @@ class Interpreter:
 		self.lineno = 0
 		self.lines = {}
 
-		self.global_ns = {}
+		self.global_ns = {"__name__": "__main__"}
 
 		clear_fd(self.fdin)
 		clear_fd(self.fdout)
