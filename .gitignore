@@ -2,6 +2,8 @@
 
 venv3*/
 
+logs/
+
 ## PYTHON
 
 # Byte-compiled / optimized / DLL files

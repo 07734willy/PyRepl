@@ -22,7 +22,9 @@ CONTENTS                                                     *pyrepl-contents*
 		3.1 Key Mapping ............... |PyReplConfig_mapkeys|
 	    3.2 Eval Timeout .............. |PyReplConfig_timeout|
 		3.3 Interpreter ............... |PyReplConfig_interpreter|
-		3.4 Highlight Groups .......... |PyReplConfig_highlight|
+		3.4 Logfile ................... |PyReplConfig_logfile|
+		3.5 Debug Mode ................ |PyReplConfig_debug|
+		3.6 Highlight Groups .......... |PyReplConfig_highlight|
     4. License ........................ |PyReplLicense|
     5. Bugs ........................... |PyReplBugs|
     6. Contributing ................... |PyReplContributing|
@@ -118,7 +120,31 @@ By default the following will be attempted, in order, if no interpreter is
 provided: `python3`, `python`, `py`.
 
 ------------------------------------------------------------------------------
-3.4 Highlight Groups                                  *PyReplConfig_highlight*
+3.4 Interpreter                                         *PyReplConfig_logfile*
+
+Variable:  g:pyrepl_logfile
+
+Set this to the filepath that you would like the logfile to write to. This 
+file only contains tracebacks from PyRepl crashes and other severe events,
+unless you enable `debug` mode.
+
+By default the logfile will be written to `logs/debug.log`, in the PyRepl
+project directory itself.
+
+------------------------------------------------------------------------------
+3.5 Interpreter                                           *PyReplConfig_debug*
+
+Variable:  g:pyrepl_debug
+
+Set this to `1` to enable debug mode. This will enable more verbose logging to the
+logfile. See |PyReplConfig_logfile| for more details on this file. In the
+future, this may also enable other features to assist in debugging or creating
+a bug report.
+
+By default debug mode is disabled.
+
+------------------------------------------------------------------------------
+3.6 Highlight Groups                                  *PyReplConfig_highlight*
 
 You can change the color of the inline ouput by overriding these highlight
 groups: `PyReplComment`, `PyReplIn`, `PyReplOut`, `PyReplInfo`. Below are
@@ -142,6 +168,23 @@ PyRepl is licensed under the MIT License.
 
 Please report bugs on the issue tracker:
 https://github.com/07734willy/PyRepl/issues
+
+When submitting a report, please include:
+  - PyRepl version
+  - Vim flavor ( vim / neovim / spacevim) and version
+  - Platform ( Windows 10 / Ubuntu 20 / etc. )
+  - A (small) reproducable example if possible
+  - The `debug.log` logfile
+
+If you can reproduce the bug on your machine, consider creating a clean
+logfile. Just insert the following at the bottom of your .vimrc temporarily:
+>
+	" This will put the logfile in your current directory
+	let g:pyrepl_logfile = "debug.log"
+	" This will enable debug mode, allowing for more verbose logging
+	let g:pyrepl_debug = 1
+<
+See |PyReplConfig_logfile| and |PyReplConfig_debug| for more details on each.
 
 ==============================================================================
 6. Contributing                                           *PyReplContributing*

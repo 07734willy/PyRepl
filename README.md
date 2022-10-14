@@ -71,6 +71,15 @@ let g:pyrepl_timeout = 1
 " This can be changed to the path of the specific executable you wish to have run your code
 " If you are using virtualenv, you should be fine. This is for others who don't use virtual environments
 let g:pyrepl_interpreter = "python"
+
+" (Debugging) Changes the location of the logfile produced when the interpreter crashes or 
+" things go "bad" in general. Defaults to `logs/debug.log` in the PyRepl project directory
+let g:pyrepl_logfile = "dir/debug.log"
+
+" (Debugging) Enables more verbose logging. By default, PyRepl only logs the Python traceback
+" for actual crashes, and very severe issue (omitting any userdata). Enabling this in turn
+" enables more detailed logging, which may contain data about the source code it processes
+let g:pyrepl_debug = 1
 ```
 
 **Mappings**
@@ -108,6 +117,29 @@ highlight PyReplOut     ctermfg=darkgrey
 highlight PyReplInfo    ctermfg=yellow
 highlight PyReplError   ctermfg=darkyellow
 ```
+
+## Bugs
+
+Please report bugs on the issue tracker on github.
+
+When submitting a report, please include:
+  - PyRepl version
+  - Vim flavor ( vim / neovim / spacevim) and version
+  - Platform ( Windows 10 / Ubuntu 20 / etc. )
+  - A (small) reproducable example if possible
+  - The `debug.log` logfile
+
+If you can reproduce the bug on your machine, consider creating a clean
+logfile. Just insert the following at the bottom of your .vimrc temporarily:
+
+```vim
+" This will put the logfile in your current directory
+let g:pyrepl_logfile = "debug.log"
+" This will enable debug mode, allowing for more verbose logging
+let g:pyrepl_debug = 1
+```
+
+See the PyRepl help pages within vim for more details on each variable.
 
 ## Links
 

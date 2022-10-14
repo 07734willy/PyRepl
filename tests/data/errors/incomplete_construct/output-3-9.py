@@ -7,7 +7,7 @@ elif False:
 	pass
 # error:   File "<string>", line 6
 # error:     elif False:
-# error:     ^^^^
+# error:     ^
 # error: SyntaxError: invalid syntax
 
 
@@ -20,7 +20,7 @@ except:
 	pass
 # error:   File "<string>", line 19
 # error:     except:
-# error:     ^^^^^^
+# error:     ^
 # error: SyntaxError: invalid syntax
 
 x = 1
@@ -29,7 +29,7 @@ except:
 	pass
 # error:   File "<string>", line 28
 # error:     except:
-# error:     ^^^^^^
+# error:     ^
 # error: SyntaxError: invalid syntax
 
 x = 2
@@ -38,7 +38,7 @@ else:
 	pass
 # error:   File "<string>", line 37
 # error:     else:
-# error:     ^^^^
+# error:     ^
 # error: SyntaxError: invalid syntax
 
 
