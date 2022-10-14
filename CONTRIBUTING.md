@@ -34,13 +34,6 @@ If submitting a bug report, please include:
 
 To setup your development environment, you need to first download and install the currently supported major versions of python [from python.org](https://www.python.org/downloads/). The supported versions are enumerated in the `tox.ini` file as well as in `.github/workflows/python-package.yml`.
 
-Next, install the requirements via pip:
-
-```bash
-pip install -r requirements.txt
-```
-Once that is done, you will have everything you need. 
-
 ### Testing
 
 You can run the tests with the command `tox`. 
@@ -48,7 +41,7 @@ You can run the tests with the command `tox`.
 If you wish to test against one Python version at a time, I recommend setting up a virtual environment for a given Python version, and then installing the requirements. Afterwards, run
 
 ```bash
-pip install --editable .
+pip install --editable .[dev]
 ```
 
 You'll then be able to run the tests with `pytest` as normal.
