@@ -125,6 +125,10 @@ fun! s:EvalCode(start, stop) abort
 		let $PYTHONPATH = old_pypath
 	endtry
 
+	if g:pyrepl_debug
+		echomsg l:output
+	endif
+
 	for [lineno, text] in json_decode(output)
 		if lineno == -1
 			echohl ErrorMsg

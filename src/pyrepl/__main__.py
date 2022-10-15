@@ -66,7 +66,7 @@ def main():
 	# Actually start running
 
 	loglevel = logging.DEBUG if args.debug else logging.ERROR
-	logging.basicConfig(filename=logpath, encoding="utf8", level=loglevel,
+	logging.basicConfig(filename=logpath, level=loglevel,
 		format="[%(asctime)s] [%(levelname)s] %(name)s::(%(funcName)s:%(lineno)s) - %(message)s")
 
 	try:
